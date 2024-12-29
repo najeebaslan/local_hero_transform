@@ -63,8 +63,8 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
             child: LocalHero(
               controller: _tabController,
               pages: [
-                ListViewItems(textDirection: textDirection),
-                GridViewItems(textDirection: textDirection),
+                ListViewContent(textDirection: textDirection),
+                GridViewContent(textDirection: textDirection),
               ],
             ),
           );
@@ -155,8 +155,8 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
   }
 }
 
-class GridViewItems extends StatelessWidget {
-  const GridViewItems({super.key, required this.textDirection});
+class GridViewContent extends StatelessWidget {
+  const GridViewContent({super.key, required this.textDirection});
   final TextDirection textDirection;
   @override
   Widget build(BuildContext context) {
@@ -186,8 +186,8 @@ class GridViewItems extends StatelessWidget {
   }
 }
 
-class ListViewItems extends StatelessWidget {
-  const ListViewItems({super.key, required this.textDirection});
+class ListViewContent extends StatelessWidget {
+  const ListViewContent({super.key, required this.textDirection});
   final TextDirection textDirection;
 
   @override

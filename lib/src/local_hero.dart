@@ -1,3 +1,6 @@
+/*File : local_hero_transform
+Version : 0.0.1
+*/
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -29,7 +32,6 @@ class _LocalHeroState extends State<LocalHero> {
   @override
   void didChangeDependencies() {
     final resolvedController = widget.controller;
-
     _controller = resolvedController;
     _controller.addListener(_switchPage);
     _lastIndex = _controller.index; // Initialize last index

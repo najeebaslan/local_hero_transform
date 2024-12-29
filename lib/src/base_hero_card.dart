@@ -1,3 +1,6 @@
+/*File : local_hero_transform
+Version : 0.0.1
+*/
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -120,9 +123,9 @@ class BaseFavoriteCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(16.r),
         child: Image.network(
           parameters.cardModel.imageUrl,
-          // height: height?.h ?? 200,
-          // width: width?.w ?? 200,
-          // fit: BoxFit.cover,
+          height: height?.h ?? 200,
+          width: width?.w ?? 200,
+          fit: BoxFit.cover,
         ),
       ),
     );

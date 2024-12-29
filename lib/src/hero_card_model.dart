@@ -1,3 +1,6 @@
+/*File : local_hero_transform
+Version : 0.0.1
+*/
 class HeroCardModel {
   const HeroCardModel({
     required this.name,

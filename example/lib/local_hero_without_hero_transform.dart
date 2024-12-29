@@ -61,7 +61,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
       ),
       body: LocalHero(
         controller: _tabController,
-        pages: [ListViewItems(), GridViewItems()],
+        pages: [ListViewContent(), GridViewContent()],
       ),
     );
   }
@@ -109,8 +109,8 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
   }
 }
 
-class GridViewItems extends StatelessWidget {
-  const GridViewItems({super.key});
+class GridViewContent extends StatelessWidget {
+  const GridViewContent({super.key});
   @override
   Widget build(BuildContext context) {
     return GridView.count(
@@ -127,8 +127,8 @@ class GridViewItems extends StatelessWidget {
   }
 }
 
-class ListViewItems extends StatelessWidget {
-  const ListViewItems({super.key});
+class ListViewContent extends StatelessWidget {
+  const ListViewContent({super.key});
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
