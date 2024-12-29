@@ -28,9 +28,6 @@ local_hero_transform: ^0.0.1
 ```
 ## Usage
 
-TODO: Include short and useful examples for package users. Add longer examples
-to `/example` folder.
-
 Example
 Here's a basic example of how to implement Local Hero Transform in your Flutter application:
 
