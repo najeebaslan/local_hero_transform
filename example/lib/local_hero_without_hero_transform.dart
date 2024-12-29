@@ -21,7 +21,6 @@ class MyApp extends StatelessWidget {
   }
 }
 
-
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});
 
@@ -52,6 +51,8 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
       appBar: AppBar(
         backgroundColor: darkBlue,
         surfaceTintColor: darkBlue,
+        centerTitle: true,
+        title: Text('Hero Without Transform'),
         actions: [
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -243,4 +244,5 @@ const locations = [
 ];
 
 const darkBlue = Color.fromARGB(255, 18, 32, 47);
+
 enum FavoriteShape { gird, list }
