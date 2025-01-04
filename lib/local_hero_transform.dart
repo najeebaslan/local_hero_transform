@@ -1,8 +1,7 @@
 /*File : local_hero_transform
-Version : 0.0.1
+Version : 0.0.2
 */
 library local_hero_transform;
-
 
 export 'src/base_hero_card.dart';
 export 'src/card_grid_view.dart';

@@ -1,7 +1,8 @@
 name: local_hero_transform
-description: "LocalHeroTransform is a powerful Flutter package designed to simplify the creation of seamless transitions between items in grid and list views. By leveraging local hero animations, this package enhances the visual appeal of your app while providing a smooth user experience."
-version: 0.0.1
+description: "local_hero_transform is a Flutter package that simplifies seamless transitions between items in grid and list views using local hero animations, enhancing your app's visual appeal"
+version: 0.0.2
 homepage: https://github.com/najeebaslan/local_hero_transform.git
+publish_to: 'https://pub.dev'
 
 environment:
   sdk: ^3.6.0

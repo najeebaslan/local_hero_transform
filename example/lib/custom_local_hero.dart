@@ -30,7 +30,6 @@ class MyApp extends StatelessWidget {
   }
 }
 
-
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});
 
@@ -38,7 +37,8 @@ class MyHomePage extends StatefulWidget {
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateMixin {
+class _MyHomePageState extends State<MyHomePage>
+    with SingleTickerProviderStateMixin {
   late TabController _tabController;
   late ValueNotifier<FavoriteShape> _switchNotifier;
   late ValueNotifier<TextDirection> _changeLanguage;
@@ -141,7 +141,9 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
               ),
               fillColor: Colors.blue,
               child: Icon(
-                _tabController.index == 0 ? Icons.grid_view_rounded : Icons.view_agenda_outlined,
+                _tabController.index == 0
+                    ? Icons.grid_view_rounded
+                    : Icons.view_agenda_outlined,
                 size: 20 - 4,
                 color: Colors.white,
               ),
@@ -219,23 +221,30 @@ class CustomCardGridView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Hero(
       tag: index,
-      flightShuttleBuilder:
-          (flightContext, animation, flightDirection, fromHeroContext, toHeroContext) {
-        final positionRight = Tween<double>(begin: 100, end: 10).animate(animation);
-        final positionBottom = Tween<double>(begin: 50, end: 50).animate(animation);
+      flightShuttleBuilder: (flightContext, animation, flightDirection,
+          fromHeroContext, toHeroContext) {
+        final positionRight =
+            Tween<double>(begin: 100, end: 10).animate(animation);
+        final positionBottom =
+            Tween<double>(begin: 50, end: 50).animate(animation);
 
         // Get size for the to hero widget or from hero widget size
-        RenderBox? renderBoxFrom = fromHeroContext.findRenderObject() as RenderBox?;
+        RenderBox? renderBoxFrom =
+            fromHeroContext.findRenderObject() as RenderBox?;
         RenderBox? renderBoxTo = toHeroContext.findRenderObject() as RenderBox?;
         final animationHeight =
-            Tween<double>(begin: 90, end: renderBoxTo!.size.height * 0.67).animate(animation);
+            Tween<double>(begin: 90, end: renderBoxTo!.size.height * 0.67)
+                .animate(animation);
 
         final animationWidth =
-            Tween<double>(begin: 80, end: renderBoxTo.size.width * 0.9).animate(animation);
+            Tween<double>(begin: 80, end: renderBoxTo.size.width * 0.9)
+                .animate(animation);
         final favoriteIconPosition =
-            Tween<double>(begin: renderBoxFrom!.size.width - 72, end: 20).animate(animation);
+            Tween<double>(begin: renderBoxFrom!.size.width - 72, end: 20)
+                .animate(animation);
         final favoriteIconHeightPosition =
-            Tween<double>(begin: renderBoxFrom.size.height - 72, end: 20).animate(animation);
+            Tween<double>(begin: renderBoxFrom.size.height - 72, end: 20)
+                .animate(animation);
 
         return AnimatedBuilder(
           animation: animation,
@@ -291,21 +300,28 @@ class CustomCardListView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Hero(
       tag: index,
-      flightShuttleBuilder:
-          (flightContext, animation, flightDirection, fromHeroContext, toHeroContext) {
-        final positionRight = Tween<double>(begin: 10, end: 100).animate(animation);
-        final positionBottom = Tween<double>(begin: 50, end: 50).animate(animation);
+      flightShuttleBuilder: (flightContext, animation, flightDirection,
+          fromHeroContext, toHeroContext) {
+        final positionRight =
+            Tween<double>(begin: 10, end: 100).animate(animation);
+        final positionBottom =
+            Tween<double>(begin: 50, end: 50).animate(animation);
         // Get size for the to hero widget or from hero widget size
         RenderBox? renderBoxTo = toHeroContext.findRenderObject() as RenderBox?;
-        RenderBox? renderBoxFrom = fromHeroContext.findRenderObject() as RenderBox?;
+        RenderBox? renderBoxFrom =
+            fromHeroContext.findRenderObject() as RenderBox?;
         final animationHeight =
-            Tween<double>(begin: renderBoxFrom!.size.height * 0.67, end: 90).animate(animation);
+            Tween<double>(begin: renderBoxFrom!.size.height * 0.67, end: 90)
+                .animate(animation);
         final animationWidth =
-            Tween<double>(begin: renderBoxFrom.size.width * 0.9, end: 80).animate(animation);
+            Tween<double>(begin: renderBoxFrom.size.width * 0.9, end: 80)
+                .animate(animation);
         final favoriteIconPosition =
-            Tween<double>(begin: 20, end: renderBoxTo!.size.width - 72).animate(animation);
+            Tween<double>(begin: 20, end: renderBoxTo!.size.width - 72)
+                .animate(animation);
         final favoriteIconHeightPosition =
-            Tween<double>(begin: 20, end: renderBoxTo.size.height - 72).animate(animation);
+            Tween<double>(begin: 20, end: renderBoxTo.size.height - 72)
+                .animate(animation);
 
         return AnimatedBuilder(
           animation: animationHeight,
@@ -505,23 +521,42 @@ class BaseFavoriteCard extends StatelessWidget {
 }
 
 class Location {
-  const Location({required this.name, required this.place, required this.imageUrl});
+  const Location(
+      {required this.name, required this.place, required this.imageUrl});
   final String name;
   final String place;
   final String imageUrl;
 }
 
-const urlPrefix = 'https://docs.flutter.dev/cookbook/img-files/effects/parallax';
+const urlPrefix =
+    'https://docs.flutter.dev/cookbook/img-files/effects/parallax';
 const locations = [
-  Location(name: 'Mount ', place: 'U.S.A', imageUrl: '$urlPrefix/01-mount-rushmore.jpg'),
-  Location(name: 'Gardens ', place: 'Singapore', imageUrl: '$urlPrefix/02-singapore.jpg'),
-  Location(name: 'Machu Picchu', place: 'Peru', imageUrl: '$urlPrefix/03-machu-picchu.jpg'),
-  Location(name: 'Vitznau', place: 'Switzerland', imageUrl: '$urlPrefix/04-vitznau.jpg'),
-  Location(name: 'Bali', place: 'Indonesia', imageUrl: '$urlPrefix/05-bali.jpg'),
-  Location(name: 'Mexico City', place: 'Mexico', imageUrl: '$urlPrefix/06-mexico-city.jpg'),
+  Location(
+      name: 'Mount ',
+      place: 'U.S.A',
+      imageUrl: '$urlPrefix/01-mount-rushmore.jpg'),
+  Location(
+      name: 'Gardens ',
+      place: 'Singapore',
+      imageUrl: '$urlPrefix/02-singapore.jpg'),
+  Location(
+      name: 'Machu Picchu',
+      place: 'Peru',
+      imageUrl: '$urlPrefix/03-machu-picchu.jpg'),
+  Location(
+      name: 'Vitznau',
+      place: 'Switzerland',
+      imageUrl: '$urlPrefix/04-vitznau.jpg'),
+  Location(
+      name: 'Bali', place: 'Indonesia', imageUrl: '$urlPrefix/05-bali.jpg'),
+  Location(
+      name: 'Mexico City',
+      place: 'Mexico',
+      imageUrl: '$urlPrefix/06-mexico-city.jpg'),
   Location(name: 'Cairo', place: 'Egypt', imageUrl: '$urlPrefix/07-cairo.jpg'),
   Location(name: 'Yemen', place: "Sana'a", imageUrl: '$urlPrefix/07-cairo.jpg'),
 ];
 
 const darkBlue = Color(0xFFF2F3F8);
+
 enum FavoriteShape { gird, list }

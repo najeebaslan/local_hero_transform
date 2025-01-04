@@ -1,3 +1,5 @@
-## 0.0.1
+## 0.0.2
 
-* first version for local_hero_transform
+* Add Documentation for package 
+* Change transitionDuration to milliseconds: 1100
+* Optimize package description
