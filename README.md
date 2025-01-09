@@ -1,10 +1,10 @@
-# LocalHeroTransform ![](https://img.shields.io/badge/build-0.0.2-brightgreen)   [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT)
-LocalHeroTransform is a powerful Flutter package designed to simplify the creation of seamless transitions between items in grid and list views. By leveraging local hero animations, this package enhances the visual appeal of your app while providing a smooth user experience.
+# LocalHeroTransform ![](https://img.shields.io/badge/build-0.0.3-brightgreen)   [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+local hero transform is a powerful Flutter package designed to simplify the creation of seamless transitions between items in grid and list views. By leveraging local hero animations, this package enhances the visual appeal of your app while providing a smooth user experience.
 
 ## Screen Shoots
 | ![Image 1](https://github.com/najeebaslan/social_media_file_for_project/blob/main/videos/local_hero_transform_package/base_local_hero.gif?raw=true) | ![Image 2](https://github.com/najeebaslan/social_media_file_for_project/blob/main/videos/local_hero_transform_package/custom_local_hero.gif?raw=true) | ![Image 3](https://github.com/najeebaslan/social_media_file_for_project/blob/main/videos/local_hero_transform_package/local_hero_without_hero_transform.gif?raw=true) |
 |:--------------------------------------------:|:--------------------------------------------:|:--------------------------------------------:|
-| ** source code [here](https://github.com/najeebaslan/local_hero_transform/blob/main/example/lib/custom_local_hero.dart)**                                  | ** source code [here](https://github.com/najeebaslan/local_hero_transform/blob/main/example/lib/custom_local_hero.dart)**                                  | ** source code [here](https://github.com/najeebaslan/local_hero_transform/blob/main/example/lib/local_hero_without_hero_transform.dart)**                                  |
+| ** source code [here](https://github.com/najeebaslan/local_hero_transform/blob/main/example/lib/main.dart)**                                  | ** source code [here](https://github.com/najeebaslan/local_hero_transform/blob/main/example/lib/custom_local_hero.dart)**                                  | ** source code [here](https://github.com/najeebaslan/local_hero_transform/blob/main/example/lib/local_hero_without_hero_transform.dart)**                                  |
 
 ## Platform Support
 | Android | iOS | MacOS  | Web | Linux | Windows |
@@ -24,7 +24,7 @@ Add `local_hero_transform` to your `pubspec.yaml` file:
 
 ```yaml
 dependencies:
-local_hero_transform: ^0.0.2
+local_hero_transform: ^0.0.3
 ```
 ## Usage
 
@@ -62,13 +62,38 @@ LocalHero(
 controller: _controller,
 transitionDuration: Duration(milliseconds: 500),
 designSize: Size(360, 640),
-pages: [/* Your pages with hero tags here */],
+pages: [
+/* Your pages with hero tags here */
+CardGridView(),CardGridView(),
+],
 )
 ```
+
 - Customization widgets in ` BaseHeroCardOptionalParameters `
 ```dart
 CardGridView(
-index: index,
+index: index,// Unique tag for the hero animation based on the index.
+textDirection: textDirection,
+cardModel: HeroCardModel(
+name: locations[index].name,
+title: locations[index].place,
+imageUrl: locations[index].imageUrl,
+subTitle: locations[index].place,
+),
+optionalParameters:BaseHeroCardOptionalParameters(
+onPressedFavoriteIcon: () => log('favorite'),
+favoriteIconButton: ,
+imageWidget: ,
+nameWidget: ,
+subtitleWidget: ,
+titleWidget: ,
+),
+);
+```
+- Base CardListView
+```dart
+CardListView(
+index: index,// Unique tag for the hero animation based on the index.
 textDirection: textDirection,
 cardModel: HeroCardModel(
 name: locations[index].name,

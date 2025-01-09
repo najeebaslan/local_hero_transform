@@ -1,5 +1,5 @@
-## 0.0.2
+## 0.0.3
 
-* Add Documentation for package 
-* Change transitionDuration to milliseconds: 1100
-* Optimize package description
+* Explain CardListView 
+* Change package description for optimized SEO
+* Edit source code link 
