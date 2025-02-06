@@ -69,10 +69,10 @@ CardGridView(),CardGridView(),
 )
 ```
 
-- Customization widgets in ` BaseHeroCardOptionalParameters `
+- Customization widgets in ` CardOptionalParameters `
 ```dart
 CardGridView(
-index: index,// Unique tag for the hero animation based on the index.
+tagHero: index,// Unique tag for the hero animation based on the index.
 textDirection: textDirection,
 cardModel: HeroCardModel(
 name: locations[index].name,
@@ -80,20 +80,20 @@ title: locations[index].place,
 imageUrl: locations[index].imageUrl,
 subTitle: locations[index].place,
 ),
-optionalParameters:BaseHeroCardOptionalParameters(
+optionalParameters:CardOptionalParameters(
 onPressedFavoriteIcon: () => log('favorite'),
 favoriteIconButton: ,
-imageWidget: ,
-nameWidget: ,
-subtitleWidget: ,
-titleWidget: ,
+image: ,
+name: ,
+subtitle: ,
+title: ,
 ),
 );
 ```
 - Base CardListView
 ```dart
 CardListView(
-index: index,// Unique tag for the hero animation based on the index.
+tagHero: index,// Unique tag for the hero animation based on the index.
 textDirection: textDirection,
 cardModel: HeroCardModel(
 name: locations[index].name,
@@ -101,13 +101,13 @@ title: locations[index].place,
 imageUrl: locations[index].imageUrl,
 subTitle: locations[index].place,
 ),
-optionalParameters:BaseHeroCardOptionalParameters(
+optionalParameters:CardOptionalParameters(
 onPressedFavoriteIcon: () => log('favorite'),
 favoriteIconButton: ,
-imageWidget: ,
-nameWidget: ,
-subtitleWidget: ,
-titleWidget: ,
+image: ,
+name: ,
+subtitle: ,
+title: ,
 ),
 );
 ```
