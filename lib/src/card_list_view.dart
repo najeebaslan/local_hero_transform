@@ -1,5 +1,5 @@
 /* File: local_hero_transform
-   Version: 0.0.3
+   Version: 0.0.4
 */
 
 import 'package:flutter/material.dart';
@@ -18,7 +18,7 @@ class CardListView extends StatelessWidget {
   final TextDirection textDirection;
 
   /// Optional parameters for customization.
-  final BaseHeroCardOptionalParameters? optionalParameters;
+  final CardOptionalParameters? optionalParameters;
 
   /// Constructor for CardListView, requires index, card model, text direction, and optional parameters.
   const CardListView({
@@ -45,15 +45,15 @@ class CardListView extends StatelessWidget {
 
         // Define animations for height and width of the card during transition.
         final animationHeight =
-            Tween<double>(begin: renderBoxFrom!.size.height * 0.67, end: 90).animate(animation);
+            Tween<double>(begin: renderBoxFrom!.size.height * 0.65, end: 90).animate(animation);
         final animationWidth =
             Tween<double>(begin: renderBoxFrom.size.width * 0.9, end: 80).animate(animation);
 
         // Define animations for the favorite icon's position.
         final favoriteIconPosition =
-            Tween<double>(begin: 20, end: renderBoxTo!.size.width - 72).animate(animation);
+            Tween<double>(begin: 12, end: renderBoxTo!.size.width - 72).animate(animation);
         final favoriteIconHeightPosition =
-            Tween<double>(begin: 20, end: renderBoxTo.size.height - 72).animate(animation);
+            Tween<double>(begin: 12, end: renderBoxTo.size.height - 82).animate(animation);
 
         return AnimatedBuilder(
           animation: animationHeight,
@@ -87,9 +87,9 @@ class CardListView extends StatelessWidget {
         parameters: BaseHeroCardParameters(
           textDirection: textDirection,
           optionalParameters: optionalParameters,
-          favoriteIconHeightPosition: 100 - 72, // Initial height for the favorite icon position.
+          favoriteIconHeightPosition: 18, // Initial height for the favorite icon position.
           favoriteIconPosition:
-              MediaQuery.sizeOf(context).width - 72, // Initial position for the favorite icon.
+              MediaQuery.sizeOf(context).width - 92, // Initial position for the favorite icon.
           cardModel: cardModel, // Card model data.
           index: index, // Index of the card.
           heightImage: 100, // Initial height of the card image.

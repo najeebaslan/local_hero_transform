@@ -28,8 +28,7 @@ class MyHomePage extends StatefulWidget {
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage>
-    with SingleTickerProviderStateMixin {
+class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateMixin {
   late TabController _tabController;
   late ValueNotifier<FavoriteShape> _switchNotifier;
 
@@ -43,6 +42,7 @@ class _MyHomePageState extends State<MyHomePage>
   @override
   void dispose() {
     _tabController.dispose();
+    _switchNotifier.dispose();
     super.dispose();
   }
 
@@ -89,9 +89,7 @@ class _MyHomePageState extends State<MyHomePage>
               ),
               fillColor: Colors.blue,
               child: Icon(
-                _tabController.index == 0
-                    ? Icons.grid_view_rounded
-                    : Icons.view_agenda_outlined,
+                _tabController.index == 0 ? Icons.grid_view_rounded : Icons.view_agenda_outlined,
                 size: 20 - 4,
                 color: Colors.white,
               ),
@@ -228,38 +226,20 @@ class BaseCard extends StatelessWidget {
 }
 
 class Location {
-  const Location(
-      {required this.name, required this.place, required this.imageUrl});
+  const Location({required this.name, required this.place, required this.imageUrl});
   final String name;
   final String place;
   final String imageUrl;
 }
 
-const urlPrefix =
-    'https://docs.flutter.dev/cookbook/img-files/effects/parallax';
+const urlPrefix = 'https://docs.flutter.dev/cookbook/img-files/effects/parallax';
 const locations = [
-  Location(
-      name: 'Mount ',
-      place: 'U.S.A',
-      imageUrl: '$urlPrefix/01-mount-rushmore.jpg'),
-  Location(
-      name: 'Gardens ',
-      place: 'Singapore',
-      imageUrl: '$urlPrefix/02-singapore.jpg'),
-  Location(
-      name: 'Machu Picchu',
-      place: 'Peru',
-      imageUrl: '$urlPrefix/03-machu-picchu.jpg'),
-  Location(
-      name: 'Vitznau',
-      place: 'Switzerland',
-      imageUrl: '$urlPrefix/04-vitznau.jpg'),
-  Location(
-      name: 'Bali', place: 'Indonesia', imageUrl: '$urlPrefix/05-bali.jpg'),
-  Location(
-      name: 'Mexico City',
-      place: 'Mexico',
-      imageUrl: '$urlPrefix/06-mexico-city.jpg'),
+  Location(name: 'Mount ', place: 'U.S.A', imageUrl: '$urlPrefix/01-mount-rushmore.jpg'),
+  Location(name: 'Gardens ', place: 'Singapore', imageUrl: '$urlPrefix/02-singapore.jpg'),
+  Location(name: 'Machu Picchu', place: 'Peru', imageUrl: '$urlPrefix/03-machu-picchu.jpg'),
+  Location(name: 'Vitznau', place: 'Switzerland', imageUrl: '$urlPrefix/04-vitznau.jpg'),
+  Location(name: 'Bali', place: 'Indonesia', imageUrl: '$urlPrefix/05-bali.jpg'),
+  Location(name: 'Mexico City', place: 'Mexico', imageUrl: '$urlPrefix/06-mexico-city.jpg'),
   Location(name: 'Cairo', place: 'Egypt', imageUrl: '$urlPrefix/07-cairo.jpg'),
   Location(name: 'Yemen', place: "Sana'a", imageUrl: '$urlPrefix/07-cairo.jpg'),
 ];

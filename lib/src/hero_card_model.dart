@@ -1,5 +1,5 @@
 /*File : local_hero_transform
-Version : 0.0.3
+Version : 0.0.4
 */
 class HeroCardModel {
   const HeroCardModel({

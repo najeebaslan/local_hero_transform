@@ -1,6 +1,8 @@
 /* File: local_hero_transform
-   Version: 0.0.3
+   Version: 0.0.4
 */
+
+import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -18,9 +20,8 @@ class BaseFavoriteCard extends StatelessWidget {
   Widget build(BuildContext context) {
     // Determine the text direction for layout.
     bool isRtl = parameters.textDirection == TextDirection.rtl;
-    BaseHeroCardOptionalParameters? optionalParams =
+    CardOptionalParameters? optionalParams =
         parameters.optionalParameters; // Optional parameters for customization.
-
     return ConstrainedBox(
       constraints:
           BoxConstraints(maxHeight: parameters.heightImage), // Constrain the card's maximum height.
@@ -40,94 +41,103 @@ class BaseFavoriteCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(24.0.r), // Rounded corners.
         ),
         margin: EdgeInsets.symmetric(horizontal: 10.w, vertical: 8.h), // Margin for spacing.
-        child: Stack(
-          children: [
-            // Display the image or a custom image widget if provided.
-            optionalParams?.imageWidget ??
-                _buildImage(
-                  height: parameters.heightImage,
-                  width: parameters.widthImage,
-                ),
-            // Position the favorite icon button on the card.
-            Positioned(
-              top: parameters.favoriteIconHeightPosition.abs(),
-              right: isRtl ? parameters.favoriteIconPosition : null,
-              left: !isRtl ? parameters.favoriteIconPosition : null,
-              child: optionalParams?.favoriteIconButton ??
-                  IconButton(
-                    style: ButtonStyle(
-                      backgroundColor:
-                          WidgetStateProperty.all(Colors.redAccent), // Background for the button.
-                    ),
-                    icon: Icon(
-                      Icons.favorite,
-                      color: Colors.white,
-                      size: 24,
-                    ),
-                    onPressed:
-                        optionalParams?.onPressedFavoriteIcon, // Action when the button is pressed.
+        child: InkWell(
+          onTap: () {
+            log('najeeb aslan');
+          },
+          child: Stack(
+            children: [
+              // Display the image or a custom image widget if provided.
+              optionalParams?.image ??
+                  _buildImage(
+                    height: parameters.heightImage,
+                    width: parameters.widthImage,
                   ),
-            ),
-            // Display the card name.
-            Positioned(
-              bottom: parameters.bottomTitle,
-              right: isRtl ? parameters.rightTitle : 10.w,
-              left: !isRtl ? parameters.rightTitle : 10.w,
-              child: optionalParams?.nameWidget ??
-                  Row(
-                    children: [
-                      Text(
-                        parameters.cardModel.name,
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 16.sp,
-                          fontWeight: FontWeight.w500,
+              // Position the favorite icon button on the card.
+              Positioned(
+                top: parameters.favoriteIconHeightPosition.abs(),
+                right: isRtl ? parameters.favoriteIconPosition : null,
+                left: !isRtl ? parameters.favoriteIconPosition : null,
+                child: optionalParams?.favoriteIconButton ??
+                    IconButton(
+                        style: ButtonStyle(
+                          backgroundColor: WidgetStateProperty.all(
+                              Colors.redAccent), // Background for the button.
                         ),
-                      ),
-                      const Spacer(), // Spacer to push content to the left.
-                    ],
-                  ),
-            ),
-            // Display the card title.
-            Positioned(
-              bottom: (parameters.bottomTitle / 1.6).h,
-              right: isRtl ? parameters.rightPrice : null,
-              left: !isRtl ? parameters.rightPrice : null,
-              child: optionalParams?.titleWidget ??
-                  RichText(
-                    text: TextSpan(
-                      text: parameters.cardModel.title.toString(),
+                        icon: Icon(
+                          Icons.favorite,
+                          color: Colors.white,
+                          size: 24,
+                        ),
+                        onPressed: () => onPassedIcon(optionalParams, context)
+                        // Action when the button is pressed.
+                        ),
+              ),
+              // Display the card name.
+              Positioned(
+                bottom: parameters.bottomTitle,
+                right: isRtl ? parameters.rightTitle : 10.w,
+                left: !isRtl ? parameters.rightTitle : 10.w,
+                child: optionalParams?.name ??
+                    Text(
+                      parameters.cardModel.name,
                       style: TextStyle(
-                        color: Colors.blue,
-                        fontSize: 14.sp,
+                        color: Colors.black,
+                        fontSize: 16.sp,
                         fontWeight: FontWeight.w500,
                       ),
-                      children: [
-                        WidgetSpan(child: SizedBox(width: 3.w)), // Space between text elements.
-                        TextSpan(
-                          text: 'sar', // Currency symbol.
-                          style: TextStyle(
-                            color: Colors.black,
-                            fontSize: 14.sp,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ],
                     ),
-                  ),
-            ),
-            // Display the subtitle of the card.
-            Positioned(
-              bottom: parameters.bottomTitle / 6,
-              right: isRtl ? parameters.rightPrice : null,
-              left: !isRtl ? parameters.rightPrice : null,
-              child: optionalParams?.subtitleWidget ??
-                  _buildSubTitle(context), // Use a subtitle widget if provided.
-            ),
-          ],
+              ),
+              // Display the card title.
+              Positioned(
+                bottom: (parameters.bottomTitle / 1.7).h,
+                right: isRtl ? parameters.rightPrice : null,
+                left: !isRtl ? parameters.rightPrice : null,
+                child: optionalParams?.title ??
+                    RichText(
+                      text: TextSpan(
+                        text: parameters.cardModel.title.toString(),
+                        style: TextStyle(
+                          color: Colors.blue,
+                          fontSize: 14.sp,
+                          fontWeight: FontWeight.w500,
+                        ),
+                        children: [
+                          WidgetSpan(child: SizedBox(width: 3.w)), // Space between text elements.
+                          TextSpan(
+                            text: 'sar', // Currency symbol.
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontSize: 14.sp,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+              ),
+              // Display the subtitle of the card.
+              Positioned(
+                bottom: parameters.bottomTitle / 6,
+                right: isRtl ? parameters.rightPrice : null,
+                left: !isRtl ? parameters.rightPrice : null,
+                child: optionalParams?.subtitle ??
+                    _buildSubTitle(context), // Use a subtitle widget if provided.
+              ),
+            ],
+          ),
         ),
       ),
     );
+  }
+
+  void onPassedIcon(CardOptionalParameters? optionalParams, BuildContext context) {
+    optionalParams != null && optionalParams.onPressedFavoriteIcon != null
+        ? optionalParams.onPressedFavoriteIcon!(
+            parameters.cardModel,
+            context,
+          )
+        : null;
   }
 
   /// Method to build the card image.
@@ -183,8 +193,7 @@ class BaseHeroCardParameters {
   final double favoriteIconHeightPosition; // Height position of the favorite icon.
   final HeroCardModel cardModel; // Model representing the card data.
   final TextDirection textDirection; // Text direction for the card layout.
-  final BaseHeroCardOptionalParameters?
-      optionalParameters; // Optional parameters for customization.
+  final CardOptionalParameters? optionalParameters; // Optional parameters for customization.
 
   /// Constructor for BaseHeroCardParameters, requiring necessary parameters.
   const BaseHeroCardParameters({
@@ -203,21 +212,25 @@ class BaseHeroCardParameters {
 }
 
 /// Optional parameters for customizing the BaseFavoriteCard.
-class BaseHeroCardOptionalParameters {
-  final Widget? titleWidget; // Custom title widget.
-  final Widget? nameWidget; // Custom name widget.
+class CardOptionalParameters {
+  final Widget? title; // Custom title widget.
+  final Widget? name; // Custom name widget.
   final Widget? favoriteIconButton; // Custom favorite icon button.
-  final VoidCallback? onPressedFavoriteIcon; // Callback for favorite icon press.
-  final Widget? subtitleWidget; // Custom subtitle widget.
-  final Widget? imageWidget; // Custom image widget.
+  final OnPressedFavoriteIcon? onPressedFavoriteIcon; // Callback for favorite icon press.
+  final OnPressedFavoriteIcon? onPressedCard; // Callback for favorite icon press.
+  final Widget? subtitle; // Custom subtitle widget.
+  final Widget? image; // Custom image widget.
 
   /// Constructor for BaseHeroCardOptionalParameters.
-  BaseHeroCardOptionalParameters({
-    this.titleWidget,
-    this.nameWidget,
+  CardOptionalParameters({
+    this.title,
+    this.name,
     this.favoriteIconButton,
     this.onPressedFavoriteIcon,
-    this.subtitleWidget,
-    this.imageWidget,
+    this.onPressedCard,
+    this.subtitle,
+    this.image,
   });
 }
+
+typedef OnPressedFavoriteIcon = Function(HeroCardModel cardModel, BuildContext context);

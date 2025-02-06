@@ -1,10 +1,11 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:local_hero_transform/local_hero_transform.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -30,8 +31,7 @@ class MyHomePage extends StatefulWidget {
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage>
-    with SingleTickerProviderStateMixin {
+class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateMixin {
   late TabController _tabController;
   late ValueNotifier<FavoriteShape> _switchNotifier;
   late ValueNotifier<TextDirection> _changeLanguage;
@@ -40,7 +40,7 @@ class _MyHomePageState extends State<MyHomePage>
   void initState() {
     super.initState();
     _switchNotifier = ValueNotifier(FavoriteShape.gird);
-    _changeLanguage = ValueNotifier(TextDirection.rtl);
+    _changeLanguage = ValueNotifier(TextDirection.ltr);
     _tabController = TabController(length: 2, vsync: this);
   }
 
@@ -134,9 +134,7 @@ class _MyHomePageState extends State<MyHomePage>
               ),
               fillColor: Colors.blue,
               child: Icon(
-                _tabController.index == 0
-                    ? Icons.grid_view_rounded
-                    : Icons.view_agenda_outlined,
+                _tabController.index == 0 ? Icons.grid_view_rounded : Icons.view_agenda_outlined,
                 size: 20 - 4,
                 color: Colors.white,
               ),
@@ -171,7 +169,7 @@ class GridViewContent extends StatelessWidget {
         locations.length,
         (index) {
           return CardGridView(
-            index: index,
+            tagHero: index,
             textDirection: textDirection,
             cardModel: HeroCardModel(
               name: locations[index].name,
@@ -179,8 +177,13 @@ class GridViewContent extends StatelessWidget {
               imageUrl: locations[index].imageUrl,
               subTitle: locations[index].place,
             ),
-            optionalParameters: BaseHeroCardOptionalParameters(
-              onPressedFavoriteIcon: () => log('favorite'),
+            optionalParameters: CardOptionalParameters(
+              onPressedCard: (cardModel, context) {
+                log(cardModel.name, name: 'onPressed card');
+              },
+              onPressedFavoriteIcon: (cardModel, context) {
+                log(cardModel.name, name: 'onPressed Favorite Icon');
+              },
             ),
           );
         },
@@ -196,11 +199,19 @@ class ListViewContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
-      padding: EdgeInsets.zero,
+      padding: EdgeInsets.only(top: 10.h, right: 10, left: 10),
       itemCount: locations.length,
       itemBuilder: (context, index) {
         return CardListView(
           index: index,
+          optionalParameters: CardOptionalParameters(
+            onPressedCard: (cardModel, context) {
+              log(cardModel.name, name: 'on Pressed Card');
+            },
+            onPressedFavoriteIcon: (cardModel, context) {
+              log(cardModel.name, name: 'onPressed Favorite Icon');
+            },
+          ),
           textDirection: textDirection,
           cardModel: HeroCardModel(
             name: locations[index].name,
@@ -215,38 +226,24 @@ class ListViewContent extends StatelessWidget {
 }
 
 class Location {
-  const Location(
-      {required this.name, required this.place, required this.imageUrl});
+  const Location({
+    required this.name,
+    required this.place,
+    required this.imageUrl,
+  });
   final String name;
   final String place;
   final String imageUrl;
 }
 
-const urlPrefix =
-    'https://docs.flutter.dev/cookbook/img-files/effects/parallax';
+const urlPrefix = 'https://docs.flutter.dev/cookbook/img-files/effects/parallax';
 const locations = [
-  Location(
-      name: 'Mount ',
-      place: 'U.S.A',
-      imageUrl: '$urlPrefix/01-mount-rushmore.jpg'),
-  Location(
-      name: 'Gardens ',
-      place: 'Singapore',
-      imageUrl: '$urlPrefix/02-singapore.jpg'),
-  Location(
-      name: 'Machu Picchu',
-      place: 'Peru',
-      imageUrl: '$urlPrefix/03-machu-picchu.jpg'),
-  Location(
-      name: 'Vitznau',
-      place: 'Switzerland',
-      imageUrl: '$urlPrefix/04-vitznau.jpg'),
-  Location(
-      name: 'Bali', place: 'Indonesia', imageUrl: '$urlPrefix/05-bali.jpg'),
-  Location(
-      name: 'Mexico City',
-      place: 'Mexico',
-      imageUrl: '$urlPrefix/06-mexico-city.jpg'),
+  Location(name: 'Mount ', place: 'U.S.A', imageUrl: '$urlPrefix/01-mount-rushmore.jpg'),
+  Location(name: 'Gardens ', place: 'Singapore', imageUrl: '$urlPrefix/02-singapore.jpg'),
+  Location(name: 'Machu Picchu', place: 'Peru', imageUrl: '$urlPrefix/03-machu-picchu.jpg'),
+  Location(name: 'Vitznau', place: 'Switzerland', imageUrl: '$urlPrefix/04-vitznau.jpg'),
+  Location(name: 'Bali', place: 'Indonesia', imageUrl: '$urlPrefix/05-bali.jpg'),
+  Location(name: 'Mexico City', place: 'Mexico', imageUrl: '$urlPrefix/06-mexico-city.jpg'),
   Location(name: 'Cairo', place: 'Egypt', imageUrl: '$urlPrefix/07-cairo.jpg'),
   Location(name: 'Yemen', place: "Sana'a", imageUrl: '$urlPrefix/07-cairo.jpg'),
 ];

@@ -37,8 +37,7 @@ class MyHomePage extends StatefulWidget {
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage>
-    with SingleTickerProviderStateMixin {
+class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateMixin {
   late TabController _tabController;
   late ValueNotifier<FavoriteShape> _switchNotifier;
   late ValueNotifier<TextDirection> _changeLanguage;
@@ -107,9 +106,15 @@ class _MyHomePageState extends State<MyHomePage>
               controller: _tabController,
               pages: [
                 ListViewItems(
+                  onPressedFavoriteIcon: (cardModel, context) {
+                    onPassedIcon(cardModel, context);
+                  },
                   textDirection: textDirection,
                 ),
                 GridViewItems(
+                  onPressedFavoriteIcon: (cardModel, context) {
+                    onPassedIcon(cardModel, context);
+                  },
                   textDirection: textDirection,
                 ),
               ],
@@ -119,6 +124,8 @@ class _MyHomePageState extends State<MyHomePage>
       ),
     );
   }
+
+  void onPassedIcon(HeroCardModel cardModel, BuildContext context) {}
 
   Widget _buildSwitchGridAndListButton() {
     return ValueListenableBuilder(
@@ -141,9 +148,7 @@ class _MyHomePageState extends State<MyHomePage>
               ),
               fillColor: Colors.blue,
               child: Icon(
-                _tabController.index == 0
-                    ? Icons.grid_view_rounded
-                    : Icons.view_agenda_outlined,
+                _tabController.index == 0 ? Icons.grid_view_rounded : Icons.view_agenda_outlined,
                 size: 20 - 4,
                 color: Colors.white,
               ),
@@ -166,8 +171,11 @@ class _MyHomePageState extends State<MyHomePage>
 }
 
 class GridViewItems extends StatelessWidget {
-  const GridViewItems({super.key, required this.textDirection});
+  const GridViewItems(
+      {super.key, required this.textDirection, required this.onPressedFavoriteIcon});
   final TextDirection textDirection;
+  final OnPressedFavoriteIcon onPressedFavoriteIcon;
+
   @override
   Widget build(BuildContext context) {
     return GridView.count(
@@ -180,6 +188,7 @@ class GridViewItems extends StatelessWidget {
           index: index,
           location: locations[index],
           textDirection: textDirection,
+          onPressedFavoriteIcon: onPressedFavoriteIcon,
         ),
       ),
     );
@@ -187,16 +196,22 @@ class GridViewItems extends StatelessWidget {
 }
 
 class ListViewItems extends StatelessWidget {
-  const ListViewItems({super.key, required this.textDirection});
+  const ListViewItems({
+    super.key,
+    required this.textDirection,
+    required this.onPressedFavoriteIcon,
+  });
   final TextDirection textDirection;
+  final OnPressedFavoriteIcon onPressedFavoriteIcon;
 
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
-      padding: EdgeInsets.zero,
+      padding: EdgeInsets.only(top: 10.h, right: 10, left: 10),
       itemCount: locations.length,
       itemBuilder: (context, index) {
         return CustomCardListView(
+          onPressedFavoriteIcon: onPressedFavoriteIcon,
           index: index,
           textDirection: textDirection,
           location: locations[index],
@@ -210,9 +225,12 @@ class CustomCardGridView extends StatelessWidget {
   final int index;
   final Location location;
   final TextDirection textDirection;
+  final OnPressedFavoriteIcon onPressedFavoriteIcon;
+
   const CustomCardGridView({
     required this.location,
     required this.index,
+    required this.onPressedFavoriteIcon,
     required this.textDirection,
     super.key,
   });
@@ -221,35 +239,29 @@ class CustomCardGridView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Hero(
       tag: index,
-      flightShuttleBuilder: (flightContext, animation, flightDirection,
-          fromHeroContext, toHeroContext) {
-        final positionRight =
-            Tween<double>(begin: 100, end: 10).animate(animation);
-        final positionBottom =
-            Tween<double>(begin: 50, end: 50).animate(animation);
+      flightShuttleBuilder:
+          (flightContext, animation, flightDirection, fromHeroContext, toHeroContext) {
+        final positionRight = Tween<double>(begin: 100, end: 10).animate(animation);
+        final positionBottom = Tween<double>(begin: 50, end: 50).animate(animation);
 
         // Get size for the to hero widget or from hero widget size
-        RenderBox? renderBoxFrom =
-            fromHeroContext.findRenderObject() as RenderBox?;
+        RenderBox? renderBoxFrom = fromHeroContext.findRenderObject() as RenderBox?;
         RenderBox? renderBoxTo = toHeroContext.findRenderObject() as RenderBox?;
         final animationHeight =
-            Tween<double>(begin: 90, end: renderBoxTo!.size.height * 0.67)
-                .animate(animation);
+            Tween<double>(begin: 90, end: renderBoxTo!.size.height * 0.65).animate(animation);
 
         final animationWidth =
-            Tween<double>(begin: 80, end: renderBoxTo.size.width * 0.9)
-                .animate(animation);
+            Tween<double>(begin: 80, end: renderBoxTo.size.width * 0.9).animate(animation);
         final favoriteIconPosition =
-            Tween<double>(begin: renderBoxFrom!.size.width - 72, end: 20)
-                .animate(animation);
+            Tween<double>(begin: renderBoxFrom!.size.width - 72, end: 12).animate(animation);
         final favoriteIconHeightPosition =
-            Tween<double>(begin: renderBoxFrom.size.height - 72, end: 20)
-                .animate(animation);
+            Tween<double>(begin: renderBoxFrom.size.height - 82, end: 12).animate(animation);
 
         return AnimatedBuilder(
           animation: animation,
           builder: (context, child) {
             return BaseFavoriteCard(
+              onPressedFavoriteIcon: onPressedFavoriteIcon,
               textDirection: textDirection,
               favoriteIconHeightPosition: favoriteIconHeightPosition.value,
               favoriteIconPosition: favoriteIconPosition.value,
@@ -269,13 +281,14 @@ class CustomCardGridView extends StatelessWidget {
       },
       child: LayoutBuilder(builder: (context, constraints) {
         return BaseFavoriteCard(
+          onPressedFavoriteIcon: onPressedFavoriteIcon,
           textDirection: textDirection,
-          favoriteIconHeightPosition: 20,
-          favoriteIconPosition: 20,
+          favoriteIconHeightPosition: 12,
+          favoriteIconPosition: 12,
           location: location,
           index: index,
-          heightImage: constraints.maxHeight * 0.67,
-          widthImage: 180,
+          heightImage: constraints.maxHeight * 0.65,
+          widthImage: MediaQuery.sizeOf(context).width > 420 ? 230 : 180,
           bottomTitle: 50,
           rightTitle: 10,
           rightPrice: 10,
@@ -289,9 +302,11 @@ class CustomCardListView extends StatelessWidget {
   final int index;
   final Location location;
   final TextDirection textDirection;
+  final OnPressedFavoriteIcon onPressedFavoriteIcon;
   const CustomCardListView({
     super.key,
     required this.index,
+    required this.onPressedFavoriteIcon,
     required this.textDirection,
     required this.location,
   });
@@ -300,33 +315,27 @@ class CustomCardListView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Hero(
       tag: index,
-      flightShuttleBuilder: (flightContext, animation, flightDirection,
-          fromHeroContext, toHeroContext) {
-        final positionRight =
-            Tween<double>(begin: 10, end: 100).animate(animation);
-        final positionBottom =
-            Tween<double>(begin: 50, end: 50).animate(animation);
+      flightShuttleBuilder:
+          (flightContext, animation, flightDirection, fromHeroContext, toHeroContext) {
+        final positionRight = Tween<double>(begin: 10, end: 100).animate(animation);
+        final positionBottom = Tween<double>(begin: 50, end: 50).animate(animation);
         // Get size for the to hero widget or from hero widget size
         RenderBox? renderBoxTo = toHeroContext.findRenderObject() as RenderBox?;
-        RenderBox? renderBoxFrom =
-            fromHeroContext.findRenderObject() as RenderBox?;
+        RenderBox? renderBoxFrom = fromHeroContext.findRenderObject() as RenderBox?;
         final animationHeight =
-            Tween<double>(begin: renderBoxFrom!.size.height * 0.67, end: 90)
-                .animate(animation);
+            Tween<double>(begin: renderBoxFrom!.size.height * 0.65, end: 90).animate(animation);
         final animationWidth =
-            Tween<double>(begin: renderBoxFrom.size.width * 0.9, end: 80)
-                .animate(animation);
+            Tween<double>(begin: renderBoxFrom.size.width * 0.9, end: 80).animate(animation);
         final favoriteIconPosition =
-            Tween<double>(begin: 20, end: renderBoxTo!.size.width - 72)
-                .animate(animation);
+            Tween<double>(begin: 12, end: renderBoxTo!.size.width - 72).animate(animation);
         final favoriteIconHeightPosition =
-            Tween<double>(begin: 20, end: renderBoxTo.size.height - 72)
-                .animate(animation);
+            Tween<double>(begin: 12, end: renderBoxTo.size.height - 82).animate(animation);
 
         return AnimatedBuilder(
           animation: animationHeight,
           builder: (context, child) {
             return BaseFavoriteCard(
+              onPressedFavoriteIcon: onPressedFavoriteIcon,
               textDirection: textDirection,
               location: location,
               index: index,
@@ -345,9 +354,10 @@ class CustomCardListView extends StatelessWidget {
         return MaterialRectCenterArcTween(begin: begin, end: end);
       },
       child: BaseFavoriteCard(
+        onPressedFavoriteIcon: onPressedFavoriteIcon,
         textDirection: textDirection,
-        favoriteIconHeightPosition: 100 - 72,
-        favoriteIconPosition: MediaQuery.sizeOf(context).width - 72,
+        favoriteIconHeightPosition: 18,
+        favoriteIconPosition: MediaQuery.sizeOf(context).width - 92,
         location: location,
         index: index,
         heightImage: 100,
@@ -371,6 +381,7 @@ class BaseFavoriteCard extends StatelessWidget {
   final double favoriteIconHeightPosition;
   final Location location;
   final TextDirection textDirection;
+  final OnPressedFavoriteIcon onPressedFavoriteIcon;
   const BaseFavoriteCard({
     super.key,
     required this.index,
@@ -381,6 +392,7 @@ class BaseFavoriteCard extends StatelessWidget {
     required this.rightPrice,
     required this.location,
     required this.textDirection,
+    required this.onPressedFavoriteIcon,
     required this.favoriteIconPosition,
     required this.favoriteIconHeightPosition,
   });
@@ -520,39 +532,23 @@ class BaseFavoriteCard extends StatelessWidget {
   }
 }
 
+typedef OnPressedFavoriteIcon = Function(HeroCardModel cardModel, BuildContext context);
+
 class Location {
-  const Location(
-      {required this.name, required this.place, required this.imageUrl});
+  const Location({required this.name, required this.place, required this.imageUrl});
   final String name;
   final String place;
   final String imageUrl;
 }
 
-const urlPrefix =
-    'https://docs.flutter.dev/cookbook/img-files/effects/parallax';
+const urlPrefix = 'https://docs.flutter.dev/cookbook/img-files/effects/parallax';
 const locations = [
-  Location(
-      name: 'Mount ',
-      place: 'U.S.A',
-      imageUrl: '$urlPrefix/01-mount-rushmore.jpg'),
-  Location(
-      name: 'Gardens ',
-      place: 'Singapore',
-      imageUrl: '$urlPrefix/02-singapore.jpg'),
-  Location(
-      name: 'Machu Picchu',
-      place: 'Peru',
-      imageUrl: '$urlPrefix/03-machu-picchu.jpg'),
-  Location(
-      name: 'Vitznau',
-      place: 'Switzerland',
-      imageUrl: '$urlPrefix/04-vitznau.jpg'),
-  Location(
-      name: 'Bali', place: 'Indonesia', imageUrl: '$urlPrefix/05-bali.jpg'),
-  Location(
-      name: 'Mexico City',
-      place: 'Mexico',
-      imageUrl: '$urlPrefix/06-mexico-city.jpg'),
+  Location(name: 'Mount ', place: 'U.S.A', imageUrl: '$urlPrefix/01-mount-rushmore.jpg'),
+  Location(name: 'Gardens ', place: 'Singapore', imageUrl: '$urlPrefix/02-singapore.jpg'),
+  Location(name: 'Machu Picchu', place: 'Peru', imageUrl: '$urlPrefix/03-machu-picchu.jpg'),
+  Location(name: 'Vitznau', place: 'Switzerland', imageUrl: '$urlPrefix/04-vitznau.jpg'),
+  Location(name: 'Bali', place: 'Indonesia', imageUrl: '$urlPrefix/05-bali.jpg'),
+  Location(name: 'Mexico City', place: 'Mexico', imageUrl: '$urlPrefix/06-mexico-city.jpg'),
   Location(name: 'Cairo', place: 'Egypt', imageUrl: '$urlPrefix/07-cairo.jpg'),
   Location(name: 'Yemen', place: "Sana'a", imageUrl: '$urlPrefix/07-cairo.jpg'),
 ];

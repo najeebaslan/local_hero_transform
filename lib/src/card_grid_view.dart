@@ -1,5 +1,5 @@
 /* File: local_hero_transform
-   Version: 0.0.3
+   Version: 0.0.4
 */
 
 import 'package:flutter/material.dart';
@@ -9,7 +9,7 @@ import '../local_hero_transform.dart';
 /// CardGridView widget that displays a card in a grid layout with hero animations.
 class CardGridView extends StatelessWidget {
   /// Unique tag for the hero animation based on the index.
-  final int index;
+  final int tagHero;
 
   /// Model representing the data for the card.
   final HeroCardModel cardModel;
@@ -18,12 +18,12 @@ class CardGridView extends StatelessWidget {
   final TextDirection textDirection;
 
   /// Optional parameters for additional customization.
-  final BaseHeroCardOptionalParameters? optionalParameters;
+  final CardOptionalParameters? optionalParameters;
 
   // Constructor for CardGridView, requiring card model, index, text direction, and optional parameters.
   const CardGridView({
     required this.cardModel,
-    required this.index,
+    required this.tagHero,
     required this.textDirection,
     this.optionalParameters,
     super.key,
@@ -32,7 +32,7 @@ class CardGridView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Hero(
-      tag: index,
+      tag: tagHero,
       flightShuttleBuilder:
           (flightContext, animation, flightDirection, fromHeroContext, toHeroContext) {
         // Define animations for the position of the card during the transition.
@@ -45,15 +45,15 @@ class CardGridView extends StatelessWidget {
 
         // Define animations for height and width of the card during transition.
         final animationHeight =
-            Tween<double>(begin: 90, end: renderBoxTo!.size.height * 0.67).animate(animation);
+            Tween<double>(begin: 90, end: renderBoxTo!.size.height * 0.65).animate(animation);
         final animationWidth =
             Tween<double>(begin: 80, end: renderBoxTo.size.width * 0.9).animate(animation);
 
         // Define animations for the favorite icon's position.
         final favoriteIconPosition =
-            Tween<double>(begin: renderBoxFrom!.size.width - 72, end: 20).animate(animation);
+            Tween<double>(begin: renderBoxFrom!.size.width - 72, end: 12).animate(animation);
         final favoriteIconHeightPosition =
-            Tween<double>(begin: renderBoxFrom.size.height - 72, end: 20).animate(animation);
+            Tween<double>(begin: renderBoxFrom.size.height - 82, end: 12).animate(animation);
 
         return AnimatedBuilder(
           animation: animation,
@@ -68,7 +68,7 @@ class CardGridView extends StatelessWidget {
                 favoriteIconPosition:
                     favoriteIconPosition.value, // Animated position for the favorite icon.
                 cardModel: cardModel, // Card model data.
-                index: index, // Index of the card.
+                index: tagHero, // Index of the card.
                 heightImage: animationHeight.value, // Animated height of the card image.
                 widthImage: animationWidth.value, // Animated width of the card image.
                 bottomTitle: positionBottom.value, // Animated bottom position of the title.
@@ -90,14 +90,16 @@ class CardGridView extends StatelessWidget {
           return BaseFavoriteCard(
             parameters: BaseHeroCardParameters(
               textDirection: textDirection,
-              favoriteIconHeightPosition: 20, // Initial height for the favorite icon position.
-              favoriteIconPosition: 20, // Initial position for the favorite icon.
+              favoriteIconHeightPosition: 12, // Initial height for the favorite icon position.
+              favoriteIconPosition: 12, // Initial position for the favorite icon.
               cardModel: cardModel, // Card model data.
               optionalParameters: optionalParameters, // Optional parameters.
-              index: index, // Index of the card.
+              index: tagHero, // Index of the card.
               heightImage: constraints.maxHeight *
-                  0.67, // Set height for the card based on layout constraints.
-              widthImage: 180, // Fixed width for the card image.
+                  0.65, // Set height for the card based on layout constraints.
+              widthImage: MediaQuery.sizeOf(context).width > 420
+                  ? 230
+                  : 180, // Fixed width for the card image.
               bottomTitle: 50, // Bottom position for the title.
               rightTitle: 10, // Right position for the title.
               rightPrice: 10, // Right position for the price.
