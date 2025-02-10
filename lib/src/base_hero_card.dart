@@ -1,8 +1,6 @@
 /* File: local_hero_transform
-   Version: 0.0.4
+   Version: 0.0.5
 */
-
-import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -42,9 +40,7 @@ class BaseFavoriteCard extends StatelessWidget {
         ),
         margin: EdgeInsets.symmetric(horizontal: 10.w, vertical: 8.h), // Margin for spacing.
         child: InkWell(
-          onTap: () {
-            log('najeeb aslan');
-          },
+          onTap: () => onPassedCard(optionalParams, context),
           child: Stack(
             children: [
               // Display the image or a custom image widget if provided.
@@ -69,7 +65,7 @@ class BaseFavoriteCard extends StatelessWidget {
                           color: Colors.white,
                           size: 24,
                         ),
-                        onPressed: () => onPassedIcon(optionalParams, context)
+                        onPressed: () => onPassedIconFavorite(optionalParams, context)
                         // Action when the button is pressed.
                         ),
               ),
@@ -131,9 +127,18 @@ class BaseFavoriteCard extends StatelessWidget {
     );
   }
 
-  void onPassedIcon(CardOptionalParameters? optionalParams, BuildContext context) {
+  void onPassedIconFavorite(CardOptionalParameters? optionalParams, BuildContext context) {
     optionalParams != null && optionalParams.onPressedFavoriteIcon != null
         ? optionalParams.onPressedFavoriteIcon!(
+            parameters.cardModel,
+            context,
+          )
+        : null;
+  }
+
+  void onPassedCard(CardOptionalParameters? optionalParams, BuildContext context) {
+    optionalParams != null && optionalParams.onPressedCard != null
+        ? optionalParams.onPressedCard!(
             parameters.cardModel,
             context,
           )
