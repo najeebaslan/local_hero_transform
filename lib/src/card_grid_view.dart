@@ -1,5 +1,5 @@
 /* File: local_hero_transform
-   Version: 0.0.5
+   Version: 0.0.6
 */
 
 import 'package:flutter/material.dart';
@@ -59,23 +59,26 @@ class CardGridView extends StatelessWidget {
           animation: animation,
           builder: (context, child) {
             // Build the animated card using BaseFavoriteCard with updated parameters.
-            return BaseFavoriteCard(
-              parameters: BaseHeroCardParameters(
-                optionalParameters: optionalParameters,
-                textDirection: textDirection,
-                favoriteIconHeightPosition: favoriteIconHeightPosition
-                    .value, // Animated position for the favorite icon's height.
-                favoriteIconPosition:
-                    favoriteIconPosition.value, // Animated position for the favorite icon.
-                cardModel: cardModel, // Card model data.
-                index: tagHero, // Index of the card.
-                heightImage: animationHeight.value, // Animated height of the card image.
-                widthImage: animationWidth.value, // Animated width of the card image.
-                bottomTitle: positionBottom.value, // Animated bottom position of the title.
-                rightTitle: positionRight.value, // Animated right position of the title.
-                rightPrice: positionRight.value, // Animated right position of the price.
-              ),
-            );
+            return LayoutBuilder(builder: (context, constraints) {
+              return BaseFavoriteCard(
+                parameters: BaseHeroCardParameters(
+                  cardWidth: constraints.maxWidth,
+                  optionalParameters: optionalParameters,
+                  textDirection: textDirection,
+                  favoriteIconHeightPosition: favoriteIconHeightPosition
+                      .value, // Animated position for the favorite icon's height.
+                  favoriteIconPosition:
+                      favoriteIconPosition.value, // Animated position for the favorite icon.
+                  cardModel: cardModel, // Card model data.
+                  index: tagHero, // Index of the card.
+                  heightImage: animationHeight.value, // Animated height of the card image.
+                  widthImage: animationWidth.value, // Animated width of the card image.
+                  bottomTitle: positionBottom.value, // Animated bottom position of the title.
+                  rightTitle: positionRight.value, // Animated right position of the title.
+                  rightPrice: positionRight.value, // Animated right position of the price.
+                ),
+              );
+            });
           },
         );
       },
@@ -89,6 +92,7 @@ class CardGridView extends StatelessWidget {
           // Build the base card that is displayed initially.
           return BaseFavoriteCard(
             parameters: BaseHeroCardParameters(
+              cardWidth: constraints.maxWidth,
               textDirection: textDirection,
               favoriteIconHeightPosition: 12, // Initial height for the favorite icon position.
               favoriteIconPosition: 12, // Initial position for the favorite icon.

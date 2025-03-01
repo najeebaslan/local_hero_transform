@@ -1,5 +1,5 @@
 /* File: local_hero_transform
-   Version: 0.0.5
+   Version: 0.0.6
 */
 
 import 'package:flutter/material.dart';
@@ -21,8 +21,9 @@ class BaseFavoriteCard extends StatelessWidget {
     CardOptionalParameters? optionalParams =
         parameters.optionalParameters; // Optional parameters for customization.
     return ConstrainedBox(
-      constraints:
-          BoxConstraints(maxHeight: parameters.heightImage), // Constrain the card's maximum height.
+      constraints: BoxConstraints(
+        maxHeight: parameters.heightImage,
+      ), // Constrain the card's maximum height.
       child: Container(
         decoration: BoxDecoration(
           border: Border.all(
@@ -56,18 +57,21 @@ class BaseFavoriteCard extends StatelessWidget {
                 left: !isRtl ? parameters.favoriteIconPosition : null,
                 child: optionalParams?.favoriteIconButton ??
                     IconButton(
-                        style: ButtonStyle(
-                          backgroundColor: WidgetStateProperty.all(
-                              Colors.redAccent), // Background for the button.
+                      style: ButtonStyle(
+                        backgroundColor: WidgetStateProperty.all(
+                          Colors.redAccent,
                         ),
-                        icon: Icon(
-                          Icons.favorite,
-                          color: Colors.white,
-                          size: 24,
-                        ),
-                        onPressed: () => onPassedIconFavorite(optionalParams, context)
-                        // Action when the button is pressed.
-                        ),
+                      ),
+                      icon: Icon(
+                        Icons.favorite,
+                        color: Colors.white,
+                        size: 24,
+                      ),
+                      onPressed: () => onPassedIconFavorite(
+                        optionalParams,
+                        context,
+                      ),
+                    ),
               ),
               // Display the card name.
               Positioned(
@@ -82,39 +86,37 @@ class BaseFavoriteCard extends StatelessWidget {
                         fontSize: 16.sp,
                         fontWeight: FontWeight.w500,
                       ),
+                      maxLines: 1,
                     ),
               ),
               // Display the card title.
               Positioned(
+                width: parameters.cardWidth * 0.8,
                 bottom: (parameters.bottomTitle / 1.7).h,
                 right: isRtl ? parameters.rightPrice : null,
                 left: !isRtl ? parameters.rightPrice : null,
-                child: optionalParams?.title ??
-                    RichText(
-                      text: TextSpan(
-                        text: parameters.cardModel.title.toString(),
-                        style: TextStyle(
-                          color: Colors.blue,
-                          fontSize: 14.sp,
-                          fontWeight: FontWeight.w500,
-                        ),
-                        children: [
-                          WidgetSpan(child: SizedBox(width: 3.w)), // Space between text elements.
-                          TextSpan(
-                            text: 'sar', // Currency symbol.
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: optionalParams?.title ??
+                          Text(
+                            parameters.cardModel.title.toString(),
                             style: TextStyle(
-                              color: Colors.black,
+                              color: Colors.blue,
                               fontSize: 14.sp,
                               fontWeight: FontWeight.w500,
                             ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                           ),
-                        ],
-                      ),
                     ),
+                  ],
+                ),
               ),
               // Display the subtitle of the card.
               Positioned(
                 bottom: parameters.bottomTitle / 6,
+                width: parameters.cardWidth * 0.8,
                 right: isRtl ? parameters.rightPrice : null,
                 left: !isRtl ? parameters.rightPrice : null,
                 child: optionalParams?.subtitle ??
@@ -162,7 +164,7 @@ class BaseFavoriteCard extends StatelessWidget {
   }
 
   /// Method to build the subtitle for the card.
-  Row _buildSubTitle(BuildContext context) {
+  Widget _buildSubTitle(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.start, // Align items to the start.
       children: [
@@ -172,14 +174,18 @@ class BaseFavoriteCard extends StatelessWidget {
           size: 10,
         ),
         SizedBox(width: 1.w), // Space between icon and text.
-        Text(
-          parameters.cardModel.name, // Display the card name as subtitle.
-          style: TextStyle(
-            color: const Color(0xFF95979A),
-            fontSize: 13.sp,
-            fontWeight: FontWeight.w400,
+        Flexible(
+          child: Text(
+            parameters.cardModel.name, // Display the card name as subtitle.
+            style: TextStyle(
+              color: const Color(0xFF95979A),
+              fontSize: 13.sp,
+              fontWeight: FontWeight.w400,
+            ),
+            maxLines: 1,
+
+            overflow: TextOverflow.ellipsis, // Handle overflow with ellipsis.
           ),
-          overflow: TextOverflow.ellipsis, // Handle overflow with ellipsis.
         ),
       ],
     );
@@ -199,6 +205,7 @@ class BaseHeroCardParameters {
   final HeroCardModel cardModel; // Model representing the card data.
   final TextDirection textDirection; // Text direction for the card layout.
   final CardOptionalParameters? optionalParameters; // Optional parameters for customization.
+  final double cardWidth; // Get card width for do flexible the titles that inside positions
 
   /// Constructor for BaseHeroCardParameters, requiring necessary parameters.
   const BaseHeroCardParameters({
@@ -210,6 +217,7 @@ class BaseHeroCardParameters {
     required this.rightTitle,
     required this.rightPrice,
     required this.cardModel,
+    required this.cardWidth,
     required this.textDirection,
     required this.favoriteIconPosition,
     required this.favoriteIconHeightPosition,

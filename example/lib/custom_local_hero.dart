@@ -107,13 +107,13 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
               pages: [
                 ListViewItems(
                   onPressedFavoriteIcon: (cardModel, context) {
-                    onPassedIcon(cardModel, context);
+                    onPressedIcon(cardModel, context);
                   },
                   textDirection: textDirection,
                 ),
                 GridViewItems(
                   onPressedFavoriteIcon: (cardModel, context) {
-                    onPassedIcon(cardModel, context);
+                    onPressedIcon(cardModel, context);
                   },
                   textDirection: textDirection,
                 ),
@@ -125,7 +125,19 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
     );
   }
 
-  void onPassedIcon(HeroCardModel cardModel, BuildContext context) {}
+  void onPressedIcon(Location location, BuildContext context) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          location.name,
+          style: TextStyle(
+            color: Colors.white,
+          ),
+        ),
+        backgroundColor: Colors.lightGreen,
+      ),
+    );
+  }
 
   Widget _buildSwitchGridAndListButton() {
     return ValueListenableBuilder(
@@ -434,7 +446,7 @@ class BaseFavoriteCard extends StatelessWidget {
                   color: Colors.white,
                   size: 24,
                 ),
-                onPressed: () {},
+                onPressed: () => onPressedFavoriteIcon(location, context).call(),
               ),
             ),
             Positioned(
@@ -532,7 +544,7 @@ class BaseFavoriteCard extends StatelessWidget {
   }
 }
 
-typedef OnPressedFavoriteIcon = Function(HeroCardModel cardModel, BuildContext context);
+typedef OnPressedFavoriteIcon = Function(Location cardModel, BuildContext context);
 
 class Location {
   const Location({required this.name, required this.place, required this.imageUrl});

@@ -1,5 +1,5 @@
 /* File: local_hero_transform
-   Version: 0.0.5
+   Version: 0.0.6
 */
 
 import 'package:flutter/material.dart';
@@ -59,22 +59,26 @@ class CardListView extends StatelessWidget {
           animation: animationHeight,
           builder: (context, child) {
             // Build the animated card using BaseFavoriteCard with updated parameters.
-            return BaseFavoriteCard(
-              parameters: BaseHeroCardParameters(
-                optionalParameters: optionalParameters,
-                textDirection: textDirection,
-                cardModel: cardModel,
-                index: index,
-                heightImage: animationHeight.value, // Animated height
-                widthImage: animationWidth.value, // Animated width
-                bottomTitle: positionBottom.value, // Animated bottom title position
-                rightTitle: positionRight.value, // Animated right title position
-                rightPrice: positionRight.value, // Animated right price position
-                favoriteIconPosition: favoriteIconPosition.value, // Animated favorite icon position
-                favoriteIconHeightPosition:
-                    favoriteIconHeightPosition.value, // Animated favorite icon height
-              ),
-            );
+            return LayoutBuilder(builder: (context, constraints) {
+              return BaseFavoriteCard(
+                parameters: BaseHeroCardParameters(
+                  cardWidth: constraints.maxWidth,
+                  optionalParameters: optionalParameters,
+                  textDirection: textDirection,
+                  cardModel: cardModel,
+                  index: index,
+                  heightImage: animationHeight.value, // Animated height
+                  widthImage: animationWidth.value, // Animated width
+                  bottomTitle: positionBottom.value, // Animated bottom title position
+                  rightTitle: positionRight.value, // Animated right title position
+                  rightPrice: positionRight.value, // Animated right price position
+                  favoriteIconPosition:
+                      favoriteIconPosition.value, // Animated favorite icon position
+                  favoriteIconHeightPosition:
+                      favoriteIconHeightPosition.value, // Animated favorite icon height
+                ),
+              );
+            });
           },
         );
       },
@@ -83,21 +87,26 @@ class CardListView extends StatelessWidget {
         return MaterialRectCenterArcTween(
             begin: begin, end: end); // Arc tween for smooth transitions.
       },
-      child: BaseFavoriteCard(
-        parameters: BaseHeroCardParameters(
-          textDirection: textDirection,
-          optionalParameters: optionalParameters,
-          favoriteIconHeightPosition: 18, // Initial height for the favorite icon position.
-          favoriteIconPosition:
-              MediaQuery.sizeOf(context).width - 92, // Initial position for the favorite icon.
-          cardModel: cardModel, // Card model data.
-          index: index, // Index of the card.
-          heightImage: 100, // Initial height of the card image.
-          widthImage: 80, // Initial width of the card image.
-          bottomTitle: 50, // Bottom position of the title.
-          rightTitle: 100, // Right position of the title.
-          rightPrice: 100, // Right position of the price.
-        ),
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          return BaseFavoriteCard(
+            parameters: BaseHeroCardParameters(
+              cardWidth: constraints.maxWidth,
+              textDirection: textDirection,
+              optionalParameters: optionalParameters,
+              favoriteIconHeightPosition: 18, // Initial height for the favorite icon position.
+              favoriteIconPosition:
+                  MediaQuery.sizeOf(context).width - 92, // Initial position for the favorite icon.
+              cardModel: cardModel, // Card model data.
+              index: index, // Index of the card.
+              heightImage: 100, // Initial height of the card image.
+              widthImage: 80, // Initial width of the card image.
+              bottomTitle: 50, // Bottom position of the title.
+              rightTitle: 100, // Right position of the title.
+              rightPrice: 100, // Right position of the price.
+            ),
+          );
+        },
       ),
     );
   }

@@ -179,10 +179,10 @@ class GridViewContent extends StatelessWidget {
             ),
             optionalParameters: CardOptionalParameters(
               onPressedCard: (cardModel, context) {
-                log(cardModel.name, name: 'onPressed card');
+                onPassedCard(cardModel, context);
               },
               onPressedFavoriteIcon: (cardModel, context) {
-                log(cardModel.name, name: 'onPressed Favorite Icon');
+                onPassedCard(cardModel, context);
               },
             ),
           );
@@ -206,9 +206,11 @@ class ListViewContent extends StatelessWidget {
           index: index,
           optionalParameters: CardOptionalParameters(
             onPressedCard: (cardModel, context) {
+              onPassedCard(cardModel, context);
               log(cardModel.name, name: 'on Pressed Card');
             },
             onPressedFavoriteIcon: (cardModel, context) {
+              onPassedCard(cardModel, context);
               log(cardModel.name, name: 'onPressed Favorite Icon');
             },
           ),
@@ -225,6 +227,20 @@ class ListViewContent extends StatelessWidget {
   }
 }
 
+void onPassedCard(HeroCardModel location, BuildContext context) {
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(
+      content: Text(
+        location.name,
+        style: TextStyle(
+          color: Colors.white,
+        ),
+      ),
+      backgroundColor: Colors.lightGreen,
+    ),
+  );
+}
+
 class Location {
   const Location({
     required this.name,
@@ -238,8 +254,8 @@ class Location {
 
 const urlPrefix = 'https://docs.flutter.dev/cookbook/img-files/effects/parallax';
 const locations = [
-  Location(name: 'Mount ', place: 'U.S.A', imageUrl: '$urlPrefix/01-mount-rushmore.jpg'),
-  Location(name: 'Gardens ', place: 'Singapore', imageUrl: '$urlPrefix/02-singapore.jpg'),
+  Location(name: 'Mount', place: 'U.S.A', imageUrl: '$urlPrefix/01-mount-rushmore.jpg'),
+  Location(name: 'Gardens', place: 'Singapore', imageUrl: '$urlPrefix/02-singapore.jpg'),
   Location(name: 'Machu Picchu', place: 'Peru', imageUrl: '$urlPrefix/03-machu-picchu.jpg'),
   Location(name: 'Vitznau', place: 'Switzerland', imageUrl: '$urlPrefix/04-vitznau.jpg'),
   Location(name: 'Bali', place: 'Indonesia', imageUrl: '$urlPrefix/05-bali.jpg'),
