@@ -1,3 +1,4 @@
+import 'package:example/main.dart';
 import 'package:flutter/material.dart';
 import 'package:local_hero_transform/local_hero_transform.dart';
 
@@ -56,14 +57,23 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
         title: Text('Hero Without Transform'),
         actions: [
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
+            padding: const EdgeInsets.symmetric(
+              horizontal: 20,
+            ),
             child: _buildSwitchGridAndListButton(),
           )
         ],
       ),
       body: LocalHero(
         controller: _tabController,
-        pages: [ListViewContent(), GridViewContent()],
+        pages: [
+          ListViewContent(
+            basePageContext: context,
+          ),
+          GridViewContent(
+            basePageContext: context,
+          )
+        ],
       ),
     );
   }
@@ -112,7 +122,9 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
 }
 
 class GridViewContent extends StatelessWidget {
-  const GridViewContent({super.key});
+  const GridViewContent({super.key, required this.basePageContext});
+  final BuildContext basePageContext;
+
   @override
   Widget build(BuildContext context) {
     return GridView.count(
@@ -123,14 +135,19 @@ class GridViewContent extends StatelessWidget {
       padding: const EdgeInsets.all(20.0),
       children: List.generate(
         locations.length,
-        (index) => BaseCard(index: index),
+        (index) => BaseCard(
+          index: index,
+          onPressedCard: (cardModel, cardContext) =>
+              _navigateToDetailsScreen(cardModel, basePageContext),
+        ),
       ),
     );
   }
 }
 
 class ListViewContent extends StatelessWidget {
-  const ListViewContent({super.key});
+  const ListViewContent({super.key, required this.basePageContext});
+  final BuildContext basePageContext;
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
@@ -141,7 +158,12 @@ class ListViewContent extends StatelessWidget {
           padding: const EdgeInsets.all(15.0),
           child: AspectRatio(
             aspectRatio: 16 / 9,
-            child: BaseCard(index: index),
+            child: BaseCard(
+              index: index,
+              onPressedCard: (cardModel, cardContext) {
+                _navigateToDetailsScreen(cardModel, basePageContext);
+              },
+            ),
           ),
         );
       },
@@ -149,30 +171,50 @@ class ListViewContent extends StatelessWidget {
   }
 }
 
-class BaseCard extends StatelessWidget {
-  const BaseCard({super.key, required this.index});
-  final int index;
+void _navigateToDetailsScreen(HeroCardModel cardModel, BuildContext basePageContext) {
+  Navigator.push(
+    basePageContext,
+    MaterialPageRoute(
+      builder: (_) => DetailsScreen(model: cardModel),
+    ),
+  );
+}
 
+class BaseCard extends StatelessWidget {
+  const BaseCard({super.key, required this.index, required this.onPressedCard});
+  final int index;
+  final OnPressedCard onPressedCard;
   @override
   Widget build(BuildContext context) {
     return Hero(
       tag: index,
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(16),
-        child: Stack(
-          children: [
-            Positioned.fill(
-              child: Image.network(
-                locations[index].imageUrl,
-                fit: BoxFit.cover,
+      child: GestureDetector(
+        onTap: () => onPressedCard(
+          HeroCardModel(
+            name: locations[index].name,
+            title: locations[index].place,
+            imageUrl: locations[index].imageUrl,
+            subTitle: 'subTitle',
+          ),
+          context,
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(16),
+          child: Stack(
+            children: [
+              Positioned.fill(
+                child: Image.network(
+                  locations[index].imageUrl,
+                  fit: BoxFit.cover,
+                ),
               ),
-            ),
-            _buildGradient(),
-            _buildTitleAndSubtitle(
-              locations[index].name,
-              locations[index].place,
-            ),
-          ],
+              _buildGradient(),
+              _buildTitleAndSubtitle(
+                locations[index].name,
+                locations[index].place,
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -247,3 +289,5 @@ const locations = [
 const darkBlue = Color.fromARGB(255, 18, 32, 47);
 
 enum FavoriteShape { gird, list }
+
+typedef OnPressedCard = Function(HeroCardModel cardModel, BuildContext cardContext);

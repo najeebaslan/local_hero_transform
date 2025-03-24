@@ -1,5 +1,5 @@
 /* File: local_hero_transform
-   Version: 0.0.6
+   Version: 0.0.7
 */
 
 import 'package:flutter/material.dart';
@@ -45,34 +45,28 @@ class BaseFavoriteCard extends StatelessWidget {
           child: Stack(
             children: [
               // Display the image or a custom image widget if provided.
-              optionalParams?.image ??
-                  _buildImage(
+              if (optionalParams?.image == null)
+                _buildImage(
+                  height: parameters.heightImage,
+                  width: parameters.widthImage,
+                )
+              else
+                Padding(
+                  padding: EdgeInsets.all(8.0.h), // Padding around the image.
+                  child: Container(
                     height: parameters.heightImage,
+                    clipBehavior: Clip.hardEdge,
                     width: parameters.widthImage,
-                  ),
-              // Position the favorite icon button on the card.
-              Positioned(
-                top: parameters.favoriteIconHeightPosition.abs(),
-                right: isRtl ? parameters.favoriteIconPosition : null,
-                left: !isRtl ? parameters.favoriteIconPosition : null,
-                child: optionalParams?.favoriteIconButton ??
-                    IconButton(
-                      style: ButtonStyle(
-                        backgroundColor: WidgetStateProperty.all(
-                          Colors.redAccent,
-                        ),
-                      ),
-                      icon: Icon(
-                        Icons.favorite,
-                        color: Colors.white,
-                        size: 24,
-                      ),
-                      onPressed: () => onPassedIconFavorite(
-                        optionalParams,
-                        context,
-                      ),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(16.r), // Rounded corners for the image.
                     ),
-              ),
+                    child: FittedBox(
+                      fit: BoxFit.cover,
+                      child: optionalParams!.image!,
+                    ),
+                  ),
+                ),
+
               // Display the card name.
               Positioned(
                 bottom: parameters.bottomTitle,
@@ -122,10 +116,39 @@ class BaseFavoriteCard extends StatelessWidget {
                 child: optionalParams?.subtitle ??
                     _buildSubTitle(context), // Use a subtitle widget if provided.
               ),
+
+              // Position the favorite icon button on the card.
+              buildFavoriteButton(isRtl, optionalParams, context),
             ],
           ),
         ),
       ),
+    );
+  }
+
+  Positioned buildFavoriteButton(
+      bool isRtl, CardOptionalParameters? optionalParams, BuildContext context) {
+    return Positioned(
+      top: parameters.favoriteIconHeightPosition.abs(),
+      right: isRtl ? parameters.favoriteIconPosition : null,
+      left: !isRtl ? parameters.favoriteIconPosition : null,
+      child: optionalParams?.favoriteIconButton ??
+          IconButton(
+            style: ButtonStyle(
+              backgroundColor: WidgetStateProperty.all(
+                Colors.redAccent,
+              ),
+            ),
+            icon: Icon(
+              Icons.favorite,
+              color: Colors.white,
+              size: 24,
+            ),
+            onPressed: () => onPassedIconFavorite(
+              optionalParams,
+              context,
+            ),
+          ),
     );
   }
 
@@ -246,4 +269,4 @@ class CardOptionalParameters {
   });
 }
 
-typedef OnPressedFavoriteIcon = Function(HeroCardModel cardModel, BuildContext context);
+typedef OnPressedFavoriteIcon = Function(HeroCardModel cardModel, BuildContext cardContext);

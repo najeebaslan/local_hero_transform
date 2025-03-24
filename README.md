@@ -1,10 +1,10 @@
-# LocalHeroTransform ![](https://img.shields.io/badge/build-0.0.6-brightgreen)   [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+# LocalHeroTransform ![](https://img.shields.io/badge/build-0.0.7-brightgreen)   [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 local hero transform is a powerful Flutter package designed to simplify the creation of seamless transitions between items in grid and list views. By leveraging local hero animations, this package enhances the visual appeal of your app while providing a smooth user experience.
 
 ## Screen Shoots
 | ![Image 1](https://github.com/najeebaslan/social_media_file_for_project/blob/main/videos/local_hero_transform_package/base_local_hero.gif?raw=true) | ![Image 2](https://github.com/najeebaslan/social_media_file_for_project/blob/main/videos/local_hero_transform_package/custom_local_hero.gif?raw=true) | ![Image 3](https://github.com/najeebaslan/social_media_file_for_project/blob/main/videos/local_hero_transform_package/local_hero_without_hero_transform.gif?raw=true) |
 |:--------------------------------------------:|:--------------------------------------------:|:--------------------------------------------:|
-| ** source code [here](https://github.com/najeebaslan/local_hero_transform/blob/main/example/lib/main.dart)**                                  | ** source code [here](https://github.com/najeebaslan/local_hero_transform/blob/main/example/lib/custom_local_hero.dart)**                                  | ** source code [here](https://github.com/najeebaslan/local_hero_transform/blob/main/example/lib/local_hero_without_hero_transform.dart)**                                  |
+| ** source code [here](https://github.com/najeebaslan/local_hero_transform/blob/main/example/lib/main.dart)**                                  | **                                  | ** source code [here](https://github.com/najeebaslan/local_hero_transform/blob/main/example/lib/local_hero_without_hero_transform.dart)**                                  |
 
 ## Platform Support
 | Android | iOS | MacOS  | Web | Linux | Windows |
@@ -24,7 +24,7 @@ Add `local_hero_transform` to your `pubspec.yaml` file:
 
 ```yaml
 dependencies:
-local_hero_transform: ^0.0.6
+local_hero_transform: ^0.0.7
 ```
 ## Usage
 

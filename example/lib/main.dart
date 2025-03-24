@@ -64,8 +64,14 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
             child: LocalHero(
               controller: _tabController,
               pages: [
-                ListViewContent(textDirection: textDirection),
-                GridViewContent(textDirection: textDirection),
+                ListViewContent(
+                  textDirection: textDirection,
+                  basePageContext: context,
+                ),
+                GridViewContent(
+                  textDirection: textDirection,
+                  basePageContext: context,
+                ),
               ],
             ),
           );
@@ -157,8 +163,9 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
 }
 
 class GridViewContent extends StatelessWidget {
-  const GridViewContent({super.key, required this.textDirection});
+  const GridViewContent({super.key, required this.textDirection, required this.basePageContext});
   final TextDirection textDirection;
+  final BuildContext basePageContext;
   @override
   Widget build(BuildContext context) {
     return GridView.count(
@@ -178,11 +185,19 @@ class GridViewContent extends StatelessWidget {
               subTitle: locations[index].place,
             ),
             optionalParameters: CardOptionalParameters(
-              onPressedCard: (cardModel, context) {
-                onPassedCard(cardModel, context);
+              /*  custom image */
+              // image: Image.network(
+              //   '$urlPrefix/06-mexico-city.jpg',
+              // height: 100,
+              // width: 100,
+              // fit: BoxFit.cover, // Cover the entire area.
+              // ),
+              onPressedCard: (cardModel, cardContext) {
+                _navigateToDetailsScreen(cardModel, basePageContext);
               },
-              onPressedFavoriteIcon: (cardModel, context) {
-                onPassedCard(cardModel, context);
+              onPressedFavoriteIcon: (cardModel, cardContext) {
+                onPassedCard(cardModel, cardContext);
+                log(cardModel.name, name: 'onPressed Favorite Icon');
               },
             ),
           );
@@ -193,8 +208,9 @@ class GridViewContent extends StatelessWidget {
 }
 
 class ListViewContent extends StatelessWidget {
-  const ListViewContent({super.key, required this.textDirection});
+  const ListViewContent({super.key, required this.textDirection, required this.basePageContext});
   final TextDirection textDirection;
+  final BuildContext basePageContext;
 
   @override
   Widget build(BuildContext context) {
@@ -205,12 +221,18 @@ class ListViewContent extends StatelessWidget {
         return CardListView(
           index: index,
           optionalParameters: CardOptionalParameters(
-            onPressedCard: (cardModel, context) {
-              onPassedCard(cardModel, context);
-              log(cardModel.name, name: 'on Pressed Card');
+            /*  custom image */
+            // image: Image.network(
+            //   '$urlPrefix/06-mexico-city.jpg',
+            // height: 100,
+            // width: 100,
+            // fit: BoxFit.cover, // Cover the entire area.
+            // ),
+            onPressedCard: (cardModel, cardContext) {
+              _navigateToDetailsScreen(cardModel, basePageContext);
             },
-            onPressedFavoriteIcon: (cardModel, context) {
-              onPassedCard(cardModel, context);
+            onPressedFavoriteIcon: (cardModel, cardContext) {
+              onPassedCard(cardModel, cardContext);
               log(cardModel.name, name: 'onPressed Favorite Icon');
             },
           ),
@@ -236,7 +258,16 @@ void onPassedCard(HeroCardModel location, BuildContext context) {
           color: Colors.white,
         ),
       ),
-      backgroundColor: Colors.lightGreen,
+      backgroundColor: Colors.indigo,
+    ),
+  );
+}
+
+void _navigateToDetailsScreen(HeroCardModel cardModel, BuildContext basePageContext) {
+  Navigator.push(
+    basePageContext,
+    MaterialPageRoute(
+      builder: (_) => DetailsScreen(model: cardModel),
     ),
   );
 }
@@ -267,3 +298,29 @@ const locations = [
 const backgroundColor = Color(0xFFF2F3F8);
 
 enum FavoriteShape { gird, list }
+
+class DetailsScreen extends StatelessWidget {
+  const DetailsScreen({super.key, required this.model});
+  final HeroCardModel model;
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.indigoAccent,
+        title: Text(model.name),
+      ),
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          AspectRatio(
+            aspectRatio: 16 / 14,
+            child: Image.network(
+              model.imageUrl,
+            ),
+          )
+        ],
+      ),
+    );
+  }
+}
