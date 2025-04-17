@@ -1,12 +1,7 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:local_hero_transform/local_hero_transform.dart';
 
-void main() {
-  runApp(MyApp());
-}
+void main() => runApp(const MyApp());
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -19,7 +14,7 @@ class MyApp extends StatelessWidget {
       ),
       title: 'Flutter Demo',
       debugShowCheckedModeBanner: false,
-      home: MyHomePage(),
+      home: const MyHomePage(),
     );
   }
 }
@@ -32,20 +27,27 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateMixin {
-  late TabController _tabController;
-  late ValueNotifier<FavoriteShape> _switchNotifier;
-  late ValueNotifier<TextDirection> _changeLanguage;
+  late final TabController _tabController;
+  late final ValueNotifier<FavoriteShape> _switchNotifier;
+  late final ValueNotifier<TextDirection> _changeLanguage;
 
   @override
   void initState() {
     super.initState();
     _switchNotifier = ValueNotifier(FavoriteShape.gird);
     _changeLanguage = ValueNotifier(TextDirection.ltr);
-    _tabController = TabController(length: 2, vsync: this);
+    _tabController = TabController(length: 2, vsync: this)..addListener(_handleTabChange);
+  }
+
+  void _handleTabChange() {
+    if (!_tabController.indexIsChanging) {
+      _switchNotifier.value = _tabController.index == 0 ? FavoriteShape.gird : FavoriteShape.list;
+    }
   }
 
   @override
   void dispose() {
+    _tabController.removeListener(_handleTabChange);
     _tabController.dispose();
     _switchNotifier.dispose();
     _changeLanguage.dispose();
@@ -55,24 +57,22 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: _appBar(),
-      body: ValueListenableBuilder(
+      appBar: _buildAppBar(),
+      body: ValueListenableBuilder<TextDirection>(
         valueListenable: _changeLanguage,
-        builder: (context, textDirection, child) {
+        builder: (context, textDirection, _) {
           return Directionality(
             textDirection: textDirection,
-            child: LocalHero(
-              controller: _tabController,
-              pages: [
-                ListViewContent(
-                  textDirection: textDirection,
-                  basePageContext: context,
-                ),
-                GridViewContent(
-                  textDirection: textDirection,
-                  basePageContext: context,
-                ),
-              ],
+            child: LocalHeroViews(
+              tabController: _tabController,
+              onPressedCard: (index) => _navigateToDetailsScreen(
+                context,
+                locations[index].name,
+                locations[index].imageUrl,
+              ),
+              textDirection: textDirection,
+              itemCount: locations.length,
+              itemsModel: (index) => _buildItemsModel(index),
             ),
           );
         },
@@ -80,68 +80,134 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
     );
   }
 
-  AppBar _appBar() {
+  ItemsModel _buildItemsModel(int index) {
+    return ItemsModel(
+      image: DecorationImage(
+        image: NetworkImage(locations[index].imageUrl),
+        fit: BoxFit.cover,
+      ),
+      name: Text(
+        locations[index].name,
+        style: const TextStyle(
+          color: Colors.black,
+          fontSize: 16,
+          fontWeight: FontWeight.w500,
+        ),
+        maxLines: 1,
+      ),
+      title: Text(
+        locations[index].place,
+        style: const TextStyle(
+          color: Colors.blue,
+          fontSize: 14,
+          fontWeight: FontWeight.w500,
+        ),
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+      ),
+      subTitle: Text(
+        locations[index].subtitle,
+        style: const TextStyle(
+          color: Color(0xFF95979A),
+          fontSize: 13,
+          fontWeight: FontWeight.w400,
+        ),
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+      ),
+      subTitleIcon: const Icon(
+        Icons.location_on_outlined,
+        color: Color(0xFF95979A),
+        size: 15,
+      ),
+      favoriteIconButton: _buildFavoriteButton(),
+    );
+  }
+
+  StatefulBuilder _buildFavoriteButton() {
+    bool isFavored = true;
+    return StatefulBuilder(
+      builder: (context, setState) {
+        return IconButton(
+          style: ButtonStyle(
+            backgroundColor: WidgetStateProperty.resolveWith<Color>(
+              (states) => isFavored ? Colors.redAccent : Colors.grey,
+            ),
+          ),
+          icon: const Icon(
+            Icons.favorite,
+            color: Colors.white,
+            size: 24,
+          ),
+          onPressed: () => setState(() => isFavored = !isFavored),
+        );
+      },
+    );
+  }
+
+  AppBar _buildAppBar() {
     return AppBar(
       backgroundColor: backgroundColor,
       surfaceTintColor: backgroundColor,
       actions: [
+        _buildLanguageButtons(),
+        const Spacer(),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: Row(
-            children: [
-              IconButton(
-                style: ButtonStyle(
-                  backgroundColor: WidgetStatePropertyAll(
-                    Colors.grey.withValues(alpha: 0.3),
-                  ),
-                ),
-                onPressed: () => _changeLanguage.value = TextDirection.rtl,
-                icon: Text('🇸🇦'),
-              ),
-              IconButton(
-                style: ButtonStyle(
-                  backgroundColor: WidgetStatePropertyAll(
-                    Colors.grey.withValues(alpha: 0.3),
-                  ),
-                ),
-                onPressed: () => _changeLanguage.value = TextDirection.ltr,
-                icon: Text('🇺🇸'),
-              )
-            ],
-          ),
-        ),
-        Spacer(),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: _buildSwitchGridAndListButton(),
+          child: _buildViewToggleButton(),
         ),
       ],
     );
   }
 
-  Widget _buildSwitchGridAndListButton() {
-    return ValueListenableBuilder(
+  Widget _buildLanguageButtons() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Row(
+        children: [
+          _buildLanguageButton(TextDirection.rtl, '🇸🇦'),
+          const SizedBox(width: 8),
+          _buildLanguageButton(TextDirection.ltr, '🇺🇸'),
+        ],
+      ),
+    );
+  }
+
+  IconButton _buildLanguageButton(TextDirection direction, String emoji) {
+    return IconButton(
+      style: ButtonStyle(
+        backgroundColor: WidgetStatePropertyAll(
+          Colors.grey.withValues(alpha: 0.3),
+        ),
+      ),
+      onPressed: () => _changeLanguage.value = direction,
+      icon: Text(emoji),
+    );
+  }
+
+  Widget _buildViewToggleButton() {
+    return ValueListenableBuilder<FavoriteShape>(
       valueListenable: _switchNotifier,
-      builder: (context, value, child) {
+      builder: (context, value, _) {
         return ConstrainedBox(
           constraints: BoxConstraints.tight(Size(35, 35)),
           child: AspectRatio(
             aspectRatio: 1.9 / 2,
             child: RawMaterialButton(
-              onPressed: () => _switchBetweenGridAndList(),
+              onPressed: _toggleView,
               elevation: 0,
               visualDensity: const VisualDensity(
                 vertical: -4,
                 horizontal: -4,
               ),
               shape: RoundedRectangleBorder(
-                side: BorderSide(color: Colors.black, width: 0.2),
+                side: const BorderSide(color: Colors.black, width: 0.2),
                 borderRadius: BorderRadius.circular(5),
               ),
               fillColor: Colors.blue,
               child: Icon(
-                _tabController.index == 0 ? Icons.grid_view_rounded : Icons.view_agenda_outlined,
-                size: 20 - 4,
+                value == FavoriteShape.gird ? Icons.grid_view_rounded : Icons.view_agenda_outlined,
+                size: 16,
                 color: Colors.white,
               ),
             ),
@@ -151,148 +217,86 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
     );
   }
 
-  void _switchBetweenGridAndList() {
-    if (_switchNotifier.value == FavoriteShape.gird) {
-      _tabController.animateTo(1);
-      _switchNotifier.value = FavoriteShape.list;
-    } else {
-      _tabController.animateTo(0);
-      _switchNotifier.value = FavoriteShape.gird;
-    }
+  void _toggleView() {
+    final newIndex = _tabController.index == 0 ? 1 : 0;
+    _tabController.animateTo(newIndex);
   }
 }
 
-class GridViewContent extends StatelessWidget {
-  const GridViewContent({super.key, required this.textDirection, required this.basePageContext});
-  final TextDirection textDirection;
-  final BuildContext basePageContext;
-  @override
-  Widget build(BuildContext context) {
-    return GridView.count(
-      crossAxisCount: 2,
-      childAspectRatio: 16 / 21.5,
-      padding: const EdgeInsets.all(8.0),
-      children: List.generate(
-        locations.length,
-        (index) {
-          return CardGridView(
-            tagHero: index,
-            textDirection: textDirection,
-            cardModel: HeroCardModel(
-              name: locations[index].name,
-              title: locations[index].place,
-              imageUrl: locations[index].imageUrl,
-              subTitle: locations[index].place,
-            ),
-            optionalParameters: CardOptionalParameters(
-              /*  custom image */
-              // image: Image.network(
-              //   '$urlPrefix/06-mexico-city.jpg',
-              // height: 100,
-              // width: 100,
-              // fit: BoxFit.cover, // Cover the entire area.
-              // ),
-              onPressedCard: (cardModel, cardContext) {
-                _navigateToDetailsScreen(cardModel, basePageContext);
-              },
-              onPressedFavoriteIcon: (cardModel, cardContext) {
-                onPassedCard(cardModel, cardContext);
-                log(cardModel.name, name: 'onPressed Favorite Icon');
-              },
-            ),
-          );
-        },
-      ),
-    );
-  }
-}
-
-class ListViewContent extends StatelessWidget {
-  const ListViewContent({super.key, required this.textDirection, required this.basePageContext});
-  final TextDirection textDirection;
-  final BuildContext basePageContext;
-
-  @override
-  Widget build(BuildContext context) {
-    return ListView.builder(
-      padding: EdgeInsets.only(top: 10.h, right: 10, left: 10),
-      itemCount: locations.length,
-      itemBuilder: (context, index) {
-        return CardListView(
-          index: index,
-          optionalParameters: CardOptionalParameters(
-            /*  custom image */
-            // image: Image.network(
-            //   '$urlPrefix/06-mexico-city.jpg',
-            // height: 100,
-            // width: 100,
-            // fit: BoxFit.cover, // Cover the entire area.
-            // ),
-            onPressedCard: (cardModel, cardContext) {
-              _navigateToDetailsScreen(cardModel, basePageContext);
-            },
-            onPressedFavoriteIcon: (cardModel, cardContext) {
-              onPassedCard(cardModel, cardContext);
-              log(cardModel.name, name: 'onPressed Favorite Icon');
-            },
-          ),
-          textDirection: textDirection,
-          cardModel: HeroCardModel(
-            name: locations[index].name,
-            title: locations[index].place,
-            imageUrl: locations[index].imageUrl,
-            subTitle: locations[index].place,
-          ),
-        );
-      },
-    );
-  }
-}
-
-void onPassedCard(HeroCardModel location, BuildContext context) {
-  ScaffoldMessenger.of(context).showSnackBar(
-    SnackBar(
-      content: Text(
-        location.name,
-        style: TextStyle(
-          color: Colors.white,
-        ),
-      ),
-      backgroundColor: Colors.indigo,
-    ),
-  );
-}
-
-void _navigateToDetailsScreen(HeroCardModel cardModel, BuildContext basePageContext) {
+void _navigateToDetailsScreen(BuildContext context, String name, String imageUrl) {
   Navigator.push(
-    basePageContext,
+    context,
     MaterialPageRoute(
-      builder: (_) => DetailsScreen(model: cardModel),
+      builder: (_) => DetailsScreen(name: name, imageUrl: imageUrl),
     ),
   );
 }
+
+const urlPrefix = 'https://docs.flutter.dev/cookbook/img-files/effects/parallax';
 
 class Location {
   const Location({
     required this.name,
     required this.place,
     required this.imageUrl,
+    required this.subtitle,
   });
+
   final String name;
   final String place;
   final String imageUrl;
+  final String subtitle;
 }
 
-const urlPrefix = 'https://docs.flutter.dev/cookbook/img-files/effects/parallax';
 const locations = [
-  Location(name: 'Mount', place: 'U.S.A', imageUrl: '$urlPrefix/01-mount-rushmore.jpg'),
-  Location(name: 'Gardens', place: 'Singapore', imageUrl: '$urlPrefix/02-singapore.jpg'),
-  Location(name: 'Machu Picchu', place: 'Peru', imageUrl: '$urlPrefix/03-machu-picchu.jpg'),
-  Location(name: 'Vitznau', place: 'Switzerland', imageUrl: '$urlPrefix/04-vitznau.jpg'),
-  Location(name: 'Bali', place: 'Indonesia', imageUrl: '$urlPrefix/05-bali.jpg'),
-  Location(name: 'Mexico City', place: 'Mexico', imageUrl: '$urlPrefix/06-mexico-city.jpg'),
-  Location(name: 'Cairo', place: 'Egypt', imageUrl: '$urlPrefix/07-cairo.jpg'),
-  Location(name: 'Yemen', place: "Sana'a", imageUrl: '$urlPrefix/07-cairo.jpg'),
+  Location(
+    name: 'Mount ',
+    place: 'U.S.A',
+    imageUrl: '$urlPrefix/01-mount-rushmore.jpg',
+    subtitle: 'Presidential monument',
+  ),
+  Location(
+    name: 'Gardens ',
+    place: 'Singapore',
+    imageUrl: '$urlPrefix/02-singapore.jpg',
+    subtitle: 'Futuristic gardens',
+  ),
+  Location(
+    name: 'Machu Picchu',
+    place: 'Peru',
+    imageUrl: '$urlPrefix/03-machu-picchu.jpg',
+    subtitle: 'Ancient Inca city',
+  ),
+  Location(
+    name: 'Vitznau',
+    place: 'Switzerland',
+    imageUrl: '$urlPrefix/04-vitznau.jpg',
+    subtitle: 'Lakeside village',
+  ),
+  Location(
+    name: 'Bali',
+    place: 'Indonesia',
+    imageUrl: '$urlPrefix/05-bali.jpg',
+    subtitle: 'Tropical paradise',
+  ),
+  Location(
+    name: 'Mexico City',
+    place: 'Mexico',
+    imageUrl: '$urlPrefix/06-mexico-city.jpg',
+    subtitle: 'Vibrant capital',
+  ),
+  Location(
+    name: 'Cairo',
+    place: 'Egypt',
+    imageUrl: '$urlPrefix/07-cairo.jpg',
+    subtitle: 'Pyramids city',
+  ),
+  Location(
+    name: 'Yemen',
+    place: "Sana'a",
+    imageUrl: '$urlPrefix/07-cairo.jpg',
+    subtitle: 'Ancient architecture',
+  ),
 ];
 
 const backgroundColor = Color(0xFFF2F3F8);
@@ -300,26 +304,27 @@ const backgroundColor = Color(0xFFF2F3F8);
 enum FavoriteShape { gird, list }
 
 class DetailsScreen extends StatelessWidget {
-  const DetailsScreen({super.key, required this.model});
-  final HeroCardModel model;
+  const DetailsScreen({
+    super.key,
+    required this.name,
+    required this.imageUrl,
+  });
+
+  final String name;
+  final String imageUrl;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.indigoAccent,
-        title: Text(model.name),
+        title: Text(name),
       ),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          AspectRatio(
-            aspectRatio: 16 / 14,
-            child: Image.network(
-              model.imageUrl,
-            ),
-          )
-        ],
+      body: Center(
+        child: AspectRatio(
+          aspectRatio: 16 / 14,
+          child: Image.network(imageUrl, fit: BoxFit.cover),
+        ),
       ),
     );
   }

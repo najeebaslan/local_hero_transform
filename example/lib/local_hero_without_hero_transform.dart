@@ -137,8 +137,13 @@ class GridViewContent extends StatelessWidget {
         locations.length,
         (index) => BaseCard(
           index: index,
-          onPressedCard: (cardModel, cardContext) =>
-              _navigateToDetailsScreen(cardModel, basePageContext),
+          onPressedCard: (index) {
+            _navigateToDetailsScreen(
+              basePageContext,
+              locations[index].name,
+              locations[index].imageUrl,
+            );
+          },
         ),
       ),
     );
@@ -160,9 +165,11 @@ class ListViewContent extends StatelessWidget {
             aspectRatio: 16 / 9,
             child: BaseCard(
               index: index,
-              onPressedCard: (cardModel, cardContext) {
-                _navigateToDetailsScreen(cardModel, basePageContext);
-              },
+              onPressedCard: (index) => _navigateToDetailsScreen(
+                basePageContext,
+                locations[index].name,
+                locations[index].imageUrl,
+              ),
             ),
           ),
         );
@@ -171,11 +178,11 @@ class ListViewContent extends StatelessWidget {
   }
 }
 
-void _navigateToDetailsScreen(HeroCardModel cardModel, BuildContext basePageContext) {
+void _navigateToDetailsScreen(BuildContext context, String name, String imageUrl) {
   Navigator.push(
-    basePageContext,
+    context,
     MaterialPageRoute(
-      builder: (_) => DetailsScreen(model: cardModel),
+      builder: (_) => DetailsScreen(name: name, imageUrl: imageUrl),
     ),
   );
 }
@@ -189,15 +196,7 @@ class BaseCard extends StatelessWidget {
     return Hero(
       tag: index,
       child: GestureDetector(
-        onTap: () => onPressedCard(
-          HeroCardModel(
-            name: locations[index].name,
-            title: locations[index].place,
-            imageUrl: locations[index].imageUrl,
-            subTitle: 'subTitle',
-          ),
-          context,
-        ),
+        onTap: () => onPressedCard(index),
         child: ClipRRect(
           borderRadius: BorderRadius.circular(16),
           child: Stack(
@@ -290,4 +289,4 @@ const darkBlue = Color.fromARGB(255, 18, 32, 47);
 
 enum FavoriteShape { gird, list }
 
-typedef OnPressedCard = Function(HeroCardModel cardModel, BuildContext cardContext);
+typedef OnPressedCard = Function(int index);

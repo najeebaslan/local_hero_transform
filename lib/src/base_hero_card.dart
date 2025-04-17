@@ -1,124 +1,127 @@
 /* File: local_hero_transform
-   Version: 0.0.7
+   Version: 1.0.0
 */
 
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-import 'hero_card_model.dart';
+import 'items_model.dart' show ItemsModel;
 
-/// BaseFavoriteCard widget that displays a single card with various details and animations.
-class BaseFavoriteCard extends StatelessWidget {
-  final BaseHeroCardParameters parameters; // Parameters required to build the card.
+/// The base widget that builds the actual card content.
+///
+/// This is used by both CardGrid and CustomCardListView to maintain
+/// consistent appearance while allowing different layouts.
+class BaseHeroCard extends StatelessWidget {
+  /// Creates a BaseView widget.
+  ///
+  /// Required parameters:
+  /// - [heightImage]: Height of the image area
+  /// - [index]: Index of this card
+  /// - [itemsModel]: Data model for the card
+  /// - [widthImage]: Width of the image area
+  /// - [bottomTitle]: Bottom position for title
+  /// - [rightTitle]: Right position for title
+  /// - [rightPrice]: Right position for price
+  /// - [favoriteIconPosition]: Position of favorite icon
+  /// - [favoriteIconHeightPosition]: Height position of favorite icon
+  /// - [textDirection]: Text direction for layout
+  /// - [cardWidth]: Width of the card
+  /// - [onPressedCard]: Callback when card is pressed
+  const BaseHeroCard({
+    super.key,
+    required this.heightImage,
+    required this.index,
+    required this.itemsModel,
+    required this.widthImage,
+    required this.bottomTitle,
+    required this.rightTitle,
+    required this.rightPrice,
+    required this.favoriteIconPosition,
+    required this.favoriteIconHeightPosition,
+    required this.textDirection,
+    required this.cardWidth,
+    required this.onPressedCard,
+  });
 
-  /// Constructor for BaseFavoriteCard, requiring the parameters.
-  const BaseFavoriteCard({super.key, required this.parameters});
+  final int index;
+  final double heightImage;
+  final ItemsModel itemsModel;
+  final double widthImage;
+  final double bottomTitle;
+  final double rightTitle;
+  final double rightPrice;
+  final double favoriteIconPosition;
+  final double favoriteIconHeightPosition;
+  final TextDirection textDirection;
+  final double cardWidth;
+  final CustomOnPressedFavoriteIcon onPressedCard;
 
   @override
   Widget build(BuildContext context) {
-    // Determine the text direction for layout.
-    bool isRtl = parameters.textDirection == TextDirection.rtl;
-    CardOptionalParameters? optionalParams =
-        parameters.optionalParameters; // Optional parameters for customization.
+    final isRtl = textDirection == TextDirection.rtl;
+
     return ConstrainedBox(
-      constraints: BoxConstraints(
-        maxHeight: parameters.heightImage,
-      ), // Constrain the card's maximum height.
+      constraints: BoxConstraints(maxHeight: heightImage),
       child: Container(
         decoration: BoxDecoration(
-          border: Border.all(
-            color: Colors.white.withValues(alpha: 0.1), // Light border around the card.
-          ),
+          border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
           boxShadow: [
             BoxShadow(
               blurRadius: 10,
-              color: Color(0xFF3A5160).withValues(alpha: 0.1), // Shadow effect for depth.
-              offset: const Offset(0, 5), // Position of the shadow.
+              color: const Color(0xFF3A5160).withValues(alpha: 0.1),
+              offset: const Offset(0, 5),
             ),
           ],
-          color: Colors.white, // Background color of the card.
-          borderRadius: BorderRadius.circular(24.0.r), // Rounded corners.
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(24.0.r),
         ),
-        margin: EdgeInsets.symmetric(horizontal: 10.w, vertical: 8.h), // Margin for spacing.
+        margin: EdgeInsets.symmetric(horizontal: 10.w, vertical: 8.h),
         child: InkWell(
-          onTap: () => onPassedCard(optionalParams, context),
+          onTap: () => _onPassedCard(index, context),
           child: Stack(
             children: [
-              // Display the image or a custom image widget if provided.
-              if (optionalParams?.image == null)
-                _buildImage(
-                  height: parameters.heightImage,
-                  width: parameters.widthImage,
-                )
-              else
-                Padding(
-                  padding: EdgeInsets.all(8.0.h), // Padding around the image.
-                  child: Container(
-                    height: parameters.heightImage,
-                    clipBehavior: Clip.hardEdge,
-                    width: parameters.widthImage,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(16.r), // Rounded corners for the image.
-                    ),
-                    child: FittedBox(
-                      fit: BoxFit.cover,
-                      child: optionalParams!.image!,
-                    ),
-                  ),
-                ),
-
-              // Display the card name.
+              // Name text
               Positioned(
-                bottom: parameters.bottomTitle,
-                right: isRtl ? parameters.rightTitle : 10.w,
-                left: !isRtl ? parameters.rightTitle : 10.w,
-                child: optionalParams?.name ??
-                    Text(
-                      parameters.cardModel.name,
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 16.sp,
-                        fontWeight: FontWeight.w500,
-                      ),
-                      maxLines: 1,
-                    ),
+                bottom: bottomTitle,
+                right: isRtl ? rightTitle : 10.w,
+                left: !isRtl ? rightTitle : 10.w,
+                child: _buildTextWidget(itemsModel.name),
               ),
-              // Display the card title.
+
+              // Title text
               Positioned(
-                width: parameters.cardWidth * 0.8,
-                bottom: (parameters.bottomTitle / 1.7).h,
-                right: isRtl ? parameters.rightPrice : null,
-                left: !isRtl ? parameters.rightPrice : null,
+                width: cardWidth * 0.8,
+                bottom: (bottomTitle / 1.7).h,
+                right: isRtl ? rightPrice : null,
+                left: !isRtl ? rightPrice : null,
                 child: Row(
                   children: [
-                    Expanded(
-                      child: optionalParams?.title ??
-                          Text(
-                            parameters.cardModel.title.toString(),
-                            style: TextStyle(
-                              color: Colors.blue,
-                              fontSize: 14.sp,
-                              fontWeight: FontWeight.w500,
-                            ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                    ),
+                    Expanded(child: _buildTextWidget(itemsModel.title)),
                   ],
                 ),
               ),
-              // Display the subtitle of the card.
+
+              // Subtitle with location icon
               Positioned(
-                bottom: parameters.bottomTitle / 6,
-                width: parameters.cardWidth * 0.8,
-                right: isRtl ? parameters.rightPrice : null,
-                left: !isRtl ? parameters.rightPrice : null,
-                child: optionalParams?.subtitle ??
-                    _buildSubTitle(context), // Use a subtitle widget if provided.
+                bottom: bottomTitle / 6,
+                width: cardWidth * 0.8,
+                right: isRtl ? rightPrice : null,
+                left: !isRtl ? rightPrice : null,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    if (itemsModel.subTitleIcon != null) itemsModel.subTitleIcon!,
+                    SizedBox(width: 1.w),
+                    Flexible(child: _buildTextWidget(itemsModel.subTitle)),
+                  ],
+                ),
               ),
 
-              // Position the favorite icon button on the card.
-              buildFavoriteButton(isRtl, optionalParams, context),
+              // Image
+              _buildImage(),
+
+              // Favorite button
+              _buildFavoriteButton(isRtl, context),
             ],
           ),
         ),
@@ -126,147 +129,74 @@ class BaseFavoriteCard extends StatelessWidget {
     );
   }
 
-  Positioned buildFavoriteButton(
-      bool isRtl, CardOptionalParameters? optionalParams, BuildContext context) {
-    return Positioned(
-      top: parameters.favoriteIconHeightPosition.abs(),
-      right: isRtl ? parameters.favoriteIconPosition : null,
-      left: !isRtl ? parameters.favoriteIconPosition : null,
-      child: optionalParams?.favoriteIconButton ??
-          IconButton(
-            style: ButtonStyle(
-              backgroundColor: WidgetStateProperty.all(
-                Colors.redAccent,
-              ),
-            ),
-            icon: Icon(
-              Icons.favorite,
-              color: Colors.white,
-              size: 24,
-            ),
-            onPressed: () => onPassedIconFavorite(
-              optionalParams,
-              context,
-            ),
-          ),
+  /// Builds a Text widget from the given properties
+  Widget _buildTextWidget(Text textWidget) {
+    return Text(
+      textWidget.data ?? '',
+      style: textWidget.style,
+      maxLines: 1,
+      locale: textWidget.locale,
+      overflow: TextOverflow.ellipsis,
+      key: textWidget.key,
+      selectionColor: textWidget.selectionColor,
+      semanticsLabel: textWidget.semanticsLabel,
+      softWrap: textWidget.softWrap,
+      strutStyle: textWidget.strutStyle,
+      textAlign: textWidget.textAlign,
+      textDirection: textWidget.textDirection,
+      textHeightBehavior: textWidget.textHeightBehavior,
+      textScaler: textWidget.textScaler,
+      textWidthBasis: textWidget.textWidthBasis,
     );
   }
 
-  void onPassedIconFavorite(CardOptionalParameters? optionalParams, BuildContext context) {
-    optionalParams != null && optionalParams.onPressedFavoriteIcon != null
-        ? optionalParams.onPressedFavoriteIcon!(
-            parameters.cardModel,
-            context,
-          )
-        : null;
-  }
-
-  void onPassedCard(CardOptionalParameters? optionalParams, BuildContext context) {
-    optionalParams != null && optionalParams.onPressedCard != null
-        ? optionalParams.onPressedCard!(
-            parameters.cardModel,
-            context,
-          )
-        : null;
-  }
-
-  /// Method to build the card image.
-  Widget _buildImage({double? height, double? width}) {
+  /// Builds the image portion of the card
+  Widget _buildImage() {
     return Padding(
-      padding: EdgeInsets.all(8.0.h), // Padding around the image.
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(16.r), // Rounded corners for the image.
-        child: Image.network(
-          parameters.cardModel.imageUrl, // Image URL from the card model.
-          height: height?.h ?? 200, // Height of the image.
-          width: width?.w ?? 200, // Width of the image.
-          fit: BoxFit.cover, // Cover the entire area.
+      padding: EdgeInsets.all(8.0.h),
+      child: ConstrainedBox(
+        constraints: BoxConstraints(
+          minHeight: heightImage.h,
+          minWidth: widthImage.w,
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(16.r),
+          child: Image(
+            height: heightImage.h,
+            width: widthImage.w,
+            fit: BoxFit.cover,
+            image: itemsModel.image.image,
+            alignment: itemsModel.image.alignment,
+            errorBuilder: (context, error, stackTrace) {
+              return ColoredBox(
+                color: Colors.grey.shade100,
+                child: const Icon(
+                  Icons.error,
+                  color: Colors.grey,
+                  size: 30,
+                ),
+              );
+            },
+          ),
         ),
       ),
     );
   }
 
-  /// Method to build the subtitle for the card.
-  Widget _buildSubTitle(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.start, // Align items to the start.
-      children: [
-        Icon(
-          Icons.location_on_outlined,
-          color: const Color(0xFF95979A), // Color for the location icon.
-          size: 10,
-        ),
-        SizedBox(width: 1.w), // Space between icon and text.
-        Flexible(
-          child: Text(
-            parameters.cardModel.name, // Display the card name as subtitle.
-            style: TextStyle(
-              color: const Color(0xFF95979A),
-              fontSize: 13.sp,
-              fontWeight: FontWeight.w400,
-            ),
-            maxLines: 1,
-
-            overflow: TextOverflow.ellipsis, // Handle overflow with ellipsis.
-          ),
-        ),
-      ],
+  /// Builds the favorite button
+  Positioned _buildFavoriteButton(bool isRtl, BuildContext context) {
+    return Positioned(
+      top: favoriteIconHeightPosition.abs(),
+      right: isRtl ? favoriteIconPosition : null,
+      left: !isRtl ? favoriteIconPosition : null,
+      child: itemsModel.favoriteIconButton,
     );
+  }
+
+  void _onPassedCard(int index, BuildContext context) {
+    onPressedCard(index);
   }
 }
 
-/// Parameters required to build a BaseFavoriteCard.
-class BaseHeroCardParameters {
-  final int index; // Index of the card.
-  final double heightImage; // Height of the card image.
-  final double widthImage; // Width of the card image.
-  final double bottomTitle; // Position of the bottom title.
-  final double rightTitle; // Position of the right title.
-  final double rightPrice; // Position of the right price.
-  final double favoriteIconPosition; // Position of the favorite icon.
-  final double favoriteIconHeightPosition; // Height position of the favorite icon.
-  final HeroCardModel cardModel; // Model representing the card data.
-  final TextDirection textDirection; // Text direction for the card layout.
-  final CardOptionalParameters? optionalParameters; // Optional parameters for customization.
-  final double cardWidth; // Get card width for do flexible the titles that inside positions
-
-  /// Constructor for BaseHeroCardParameters, requiring necessary parameters.
-  const BaseHeroCardParameters({
-    this.optionalParameters,
-    required this.index,
-    required this.heightImage,
-    required this.widthImage,
-    required this.bottomTitle,
-    required this.rightTitle,
-    required this.rightPrice,
-    required this.cardModel,
-    required this.cardWidth,
-    required this.textDirection,
-    required this.favoriteIconPosition,
-    required this.favoriteIconHeightPosition,
-  });
-}
-
-/// Optional parameters for customizing the BaseFavoriteCard.
-class CardOptionalParameters {
-  final Widget? title; // Custom title widget.
-  final Widget? name; // Custom name widget.
-  final Widget? favoriteIconButton; // Custom favorite icon button.
-  final OnPressedFavoriteIcon? onPressedFavoriteIcon; // Callback for favorite icon press.
-  final OnPressedFavoriteIcon? onPressedCard; // Callback for favorite icon press.
-  final Widget? subtitle; // Custom subtitle widget.
-  final Widget? image; // Custom image widget.
-
-  /// Constructor for BaseHeroCardOptionalParameters.
-  CardOptionalParameters({
-    this.title,
-    this.name,
-    this.favoriteIconButton,
-    this.onPressedFavoriteIcon,
-    this.onPressedCard,
-    this.subtitle,
-    this.image,
-  });
-}
-
-typedef OnPressedFavoriteIcon = Function(HeroCardModel cardModel, BuildContext cardContext);
+/// Signature for a callback when the favorite icon is pressed.
+typedef CustomOnPressedFavoriteIcon = void Function(int index);

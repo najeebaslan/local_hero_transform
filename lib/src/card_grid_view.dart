@@ -1,116 +1,126 @@
 /* File: local_hero_transform
-   Version: 0.0.7
+   Version: 1.0.0
 */
 
 import 'package:flutter/material.dart';
 
 import '../local_hero_transform.dart';
 
-/// CardGridView widget that displays a card in a grid layout with hero animations.
+/// A card widget designed for grid view with hero animation capabilities.
 class CardGridView extends StatelessWidget {
-  /// Unique tag for the hero animation based on the index.
-  final int tagHero;
-
-  /// Model representing the data for the card.
-  final HeroCardModel cardModel;
-
-  /// Direction displayed the card.
-  final TextDirection textDirection;
-
-  /// Optional parameters for additional customization.
-  final CardOptionalParameters? optionalParameters;
-
-  // Constructor for CardGridView, requiring card model, index, text direction, and optional parameters.
+  /// Creates a CardGrid widget.
+  ///
+  /// Required parameters:
+  /// - [textHeight]: Precalculated height for text content
+  /// - [tagHero]: Unique tag for hero animation
+  /// - [itemsModel]: Data model for the card
+  /// - [index]: Index of this card
+  /// - [textDirection]: Text direction for layout
+  /// - [onPressedCard]: Callback when card is pressed
   const CardGridView({
-    required this.cardModel,
-    required this.tagHero,
-    required this.textDirection,
-    this.optionalParameters,
     super.key,
+    required this.textHeight,
+    required this.tagHero,
+    required this.itemsModel,
+    required this.index,
+    required this.textDirection,
+    required this.onPressedCard,
   });
+
+  final double textHeight;
+  final int tagHero;
+  final ItemsModel itemsModel;
+  final int index;
+  final TextDirection textDirection;
+  final CustomOnPressedFavoriteIcon onPressedCard;
 
   @override
   Widget build(BuildContext context) {
     return Hero(
       tag: tagHero,
-      flightShuttleBuilder:
-          (flightContext, animation, flightDirection, fromHeroContext, toHeroContext) {
-        // Define animations for the position of the card during the transition.
+      flightShuttleBuilder: (
+        flightContext,
+        animation,
+        flightDirection,
+        fromHeroContext,
+        toHeroContext,
+      ) {
+        // Animation setup for hero transition
         final positionRight = Tween<double>(begin: 100, end: 10).animate(animation);
         final positionBottom = Tween<double>(begin: 50, end: 50).animate(animation);
 
-        // Get sizes of the hero widgets from their render boxes.
-        RenderBox? renderBoxFrom = fromHeroContext.findRenderObject() as RenderBox?;
-        RenderBox? renderBoxTo = toHeroContext.findRenderObject() as RenderBox?;
+        // Get render boxes for size information
+        final renderBoxFrom = fromHeroContext.findRenderObject() as RenderBox?;
+        final renderBoxTo = toHeroContext.findRenderObject() as RenderBox?;
 
-        // Define animations for height and width of the card during transition.
-        final animationHeight =
-            Tween<double>(begin: 90, end: renderBoxTo!.size.height * 0.65).animate(animation);
-        final animationWidth =
-            Tween<double>(begin: 80, end: renderBoxTo.size.width * 0.9).animate(animation);
+        // Size animations
+        final animationHeight = Tween<double>(
+          begin: 90,
+          end: renderBoxTo!.size.height - textHeight,
+        ).animate(animation);
 
-        // Define animations for the favorite icon's position.
-        final favoriteIconPosition =
-            Tween<double>(begin: renderBoxFrom!.size.width - 72, end: 12).animate(animation);
-        final favoriteIconHeightPosition =
-            Tween<double>(begin: renderBoxFrom.size.height - 82, end: 12).animate(animation);
+        final animationWidth = Tween<double>(
+          begin: 80,
+          end: renderBoxTo.size.width * 0.9,
+        ).animate(animation);
+
+        // Favorite icon position animations
+        final favoriteIconPosition = Tween<double>(
+          begin: renderBoxFrom!.size.width - 72,
+          end: 18,
+        ).animate(animation);
+
+        final favoriteIconHeightPosition = Tween<double>(
+          begin: renderBoxFrom.size.height - 82,
+          end: 18,
+        ).animate(animation);
 
         return AnimatedBuilder(
           animation: animation,
           builder: (context, child) {
-            // Build the animated card using BaseFavoriteCard with updated parameters.
             return LayoutBuilder(builder: (context, constraints) {
-              return BaseFavoriteCard(
-                parameters: BaseHeroCardParameters(
-                  cardWidth: constraints.maxWidth,
-                  optionalParameters: optionalParameters,
-                  textDirection: textDirection,
-                  favoriteIconHeightPosition: favoriteIconHeightPosition
-                      .value, // Animated position for the favorite icon's height.
-                  favoriteIconPosition:
-                      favoriteIconPosition.value, // Animated position for the favorite icon.
-                  cardModel: cardModel, // Card model data.
-                  index: tagHero, // Index of the card.
-                  heightImage: animationHeight.value, // Animated height of the card image.
-                  widthImage: animationWidth.value, // Animated width of the card image.
-                  bottomTitle: positionBottom.value, // Animated bottom position of the title.
-                  rightTitle: positionRight.value, // Animated right position of the title.
-                  rightPrice: positionRight.value, // Animated right position of the price.
-                ),
+              return BaseHeroCard(
+                onPressedCard: onPressedCard,
+                heightImage: animationHeight.value,
+                index: index,
+                itemsModel: itemsModel,
+                widthImage: animationWidth.value,
+                bottomTitle: positionBottom.value,
+                rightTitle: positionRight.value,
+                rightPrice: positionRight.value,
+                favoriteIconPosition: favoriteIconPosition.value,
+                favoriteIconHeightPosition: favoriteIconHeightPosition.value,
+                textDirection: textDirection,
+                cardWidth: constraints.maxWidth,
               );
             });
           },
         );
       },
-      // Create a rectangular tween for the hero animation.
       createRectTween: (Rect? begin, Rect? end) {
-        return MaterialRectCenterArcTween(
-            begin: begin, end: end); // Arc tween for smooth transitions.
+        return MaterialRectCenterArcTween(begin: begin, end: end);
       },
       child: LayoutBuilder(
         builder: (context, constraints) {
-          // Build the base card that is displayed initially.
-          return BaseFavoriteCard(
-            parameters: BaseHeroCardParameters(
-              cardWidth: constraints.maxWidth,
-              textDirection: textDirection,
-              favoriteIconHeightPosition: 12, // Initial height for the favorite icon position.
-              favoriteIconPosition: 12, // Initial position for the favorite icon.
-              cardModel: cardModel, // Card model data.
-              optionalParameters: optionalParameters, // Optional parameters.
-              index: tagHero, // Index of the card.
-              heightImage: constraints.maxHeight *
-                  0.65, // Set height for the card based on layout constraints.
-              widthImage: MediaQuery.sizeOf(context).width > 420
-                  ? 230
-                  : 180, // Fixed width for the card image.
-              bottomTitle: 50, // Bottom position for the title.
-              rightTitle: 10, // Right position for the title.
-              rightPrice: 10, // Right position for the price.
-            ),
+          return BaseHeroCard(
+            onPressedCard: onPressedCard,
+            heightImage: _getImageHeight(constraints, context),
+            index: index,
+            itemsModel: itemsModel,
+            widthImage: MediaQuery.sizeOf(context).width > 420 ? 230 : 180,
+            bottomTitle: 50,
+            rightTitle: 10,
+            rightPrice: 10,
+            favoriteIconPosition: 18,
+            favoriteIconHeightPosition: 18,
+            textDirection: textDirection,
+            cardWidth: constraints.maxWidth,
           );
         },
       ),
     );
   }
+
+  double _getImageHeight(BoxConstraints constraints, BuildContext context) =>
+      constraints.maxHeight - textHeight;
 }
