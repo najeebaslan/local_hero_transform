@@ -1,7 +1,10 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:local_hero_transform/src/base_hero_card.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:local_hero_transform/src/items_model.dart';
 import 'package:local_hero_transform/src/text_height_calculator.dart' show TextHeightCalculator;
+import 'package:local_hero_transform/src/utils.dart'
+    show CustomOnPressedFavoriteIcon, paddingVertical;
 
 import '../local_hero_transform.dart' show LocalHero;
 import 'card_grid_view.dart' show CardGridView;
@@ -54,50 +57,61 @@ class LocalHeroViews extends StatefulWidget {
 class _LocalHeroViewsState extends State<LocalHeroViews> with SingleTickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
-    // Calculate text height based on card content
-    final textHeight = TextHeightCalculator(
-          itemsModel: widget.itemsModel(0),
-          textDirection: widget.textDirection,
-        ).calculateHeight() *
-        2;
+    return ScreenUtilInit(
+        designSize:
+            widget.designSize ?? const Size(428, 926), // Set design size for responsive layout.
+        minTextAdapt: true, // Allow text to adapt to screen size.
+        enableScaleText: () => false, // Disable text scaling.
+        splitScreenMode: true, // Enable split screen mode for responsive design.
+        builder: (context, child) {
+          // Calculate text height based on card content
+          double sizeText = TextHeightCalculator(
+            itemsModel: widget.itemsModel(0),
+            textDirection: widget.textDirection,
+          ).calculateHeight();
+          double padding = 20;
+          double textHeight = (sizeText + (paddingVertical * 2) + padding);
 
-    return LocalHero(
-      controller: widget.tabController,
-      pages: [
-        // Grid View Tab
-        GridView.count(
-          crossAxisCount: 2,
-          childAspectRatio: 16 / 21.5,
-          padding: const EdgeInsets.all(8.0),
-          keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-          children: List.generate(widget.itemCount, (index) {
-            return CardGridView(
-              onPressedCard: widget.onPressedCard,
-              index: index,
-              itemsModel: widget.itemsModel(index),
-              tagHero: index,
-              textHeight: textHeight,
-              textDirection: widget.textDirection,
-            );
-          }),
-        ),
+          return LocalHero(
+            controller: widget.tabController,
+            pages: [
+              // Grid View Tab
+              GridView.count(
+                crossAxisCount: 2,
+                childAspectRatio: 16 / 21.5,
+                padding: EdgeInsets.all(8.0.w),
+                keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+                children: List.generate(widget.itemCount, (index) {
+                  return LayoutBuilder(builder: (context, constraints) {
+                    return CardGridView(
+                      onPressedCard: widget.onPressedCard,
+                      index: index,
+                      itemsModel: widget.itemsModel(index),
+                      tagHero: index,
+                      textHeight: kIsWeb ? textHeight : textHeight.w,
+                      textDirection: widget.textDirection,
+                    );
+                  });
+                }),
+              ),
 
-        // List View Tab
-        ListView.builder(
-          padding: const EdgeInsets.only(top: 10, right: 10, left: 10),
-          itemCount: widget.itemCount,
-          itemBuilder: (context, index) {
-            return CardListView(
-              onPressedCard: widget.onPressedCard,
-              index: index,
-              itemsModel: widget.itemsModel(index),
-              tagHero: index.toString(),
-              textHeight: textHeight,
-              textDirection: widget.textDirection,
-            );
-          },
-        ),
-      ],
-    );
+              // List View Tab
+              ListView.builder(
+                padding: const EdgeInsets.only(top: 10, right: 10, left: 10),
+                itemCount: widget.itemCount,
+                itemBuilder: (context, index) {
+                  return CardListView(
+                    onPressedCard: widget.onPressedCard,
+                    index: index,
+                    itemsModel: widget.itemsModel(index),
+                    tagHero: index.toString(),
+                    textHeight: kIsWeb ? textHeight : textHeight.w,
+                    textDirection: widget.textDirection,
+                  );
+                },
+              ),
+            ],
+          );
+        });
   }
 }

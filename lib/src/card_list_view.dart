@@ -1,8 +1,11 @@
 /* File: local_hero_transform
-   Version: 1.0.0
+   Version: 1.0.1
 */
 
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:local_hero_transform/src/utils.dart'
+    show ContextExtension, CustomOnPressedFavoriteIcon, paddingHorizontal;
 
 import '../local_hero_transform.dart';
 
@@ -36,6 +39,12 @@ class CardListView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    double endIconPosition = (context.width - (context.isTablet ? 130 : 100));
+
+    double beginAnimationWidth = (context.width * 0.5) - (paddingHorizontal * 2) - 16 / 21.5;
+    double iconHeight = context.isTablet ? 12.w : 12;
+    double iconPosition = context.isTablet ? 18.w : 18;
+
     return Hero(
       tag: index,
       flightShuttleBuilder: (
@@ -49,49 +58,41 @@ class CardListView extends StatelessWidget {
         final positionRight = Tween<double>(begin: 10, end: 100).animate(animation);
         final positionBottom = Tween<double>(begin: 50, end: 50).animate(animation);
 
-        // Get render boxes for size information
-        final renderBoxTo = toHeroContext.findRenderObject() as RenderBox?;
         final renderBoxFrom = fromHeroContext.findRenderObject() as RenderBox?;
 
-        // Size animations
         final animationHeight = Tween<double>(
           begin: renderBoxFrom!.size.height - textHeight,
-          end: 90,
+          end: 100,
         ).animate(animation);
 
-        final animationWidth = Tween<double>(
-          begin: renderBoxFrom.size.width * 0.9,
-          end: 80,
-        ).animate(animation);
+        final animationWidth = Tween<double>(begin: 170, end: 75).animate(animation);
 
-        // Favorite icon position animations
         final favoriteIconPosition = Tween<double>(
-          begin: 18,
-          end: renderBoxTo!.size.width - 72,
+          begin: iconPosition,
+          end: endIconPosition,
         ).animate(animation);
 
         final favoriteIconHeightPosition = Tween<double>(
-          begin: 18,
-          end: renderBoxTo.size.height - 82,
+          begin: iconPosition,
+          end: iconHeight,
         ).animate(animation);
-
         return AnimatedBuilder(
           animation: animation,
           builder: (context, child) {
             return LayoutBuilder(builder: (context, constraints) {
               return BaseHeroCard(
+                cardWidth: beginAnimationWidth,
                 onPressedCard: onPressedCard,
-                heightImage: animationHeight.value,
                 index: index,
+                textDirection: textDirection,
                 itemsModel: itemsModel,
+                heightImage: animationHeight.value,
                 widthImage: animationWidth.value,
-                bottomTitle: positionBottom.value,
-                rightTitle: positionRight.value,
-                rightPrice: positionRight.value,
+                bottomTitle: positionBottom.value.w,
+                rightTitle: positionRight.value.w,
+                rightPrice: positionRight.value.w,
                 favoriteIconPosition: favoriteIconPosition.value,
                 favoriteIconHeightPosition: favoriteIconHeightPosition.value,
-                textDirection: textDirection,
-                cardWidth: constraints.maxWidth,
               );
             });
           },
@@ -103,18 +104,18 @@ class CardListView extends StatelessWidget {
       child: LayoutBuilder(
         builder: (context, constraints) {
           return BaseHeroCard(
+            cardWidth: constraints.maxWidth - 80.w,
             onPressedCard: onPressedCard,
-            heightImage: 100,
-            index: index,
-            itemsModel: itemsModel,
-            widthImage: 80,
-            bottomTitle: 50,
-            rightTitle: 100,
-            rightPrice: 100,
-            favoriteIconPosition: MediaQuery.sizeOf(context).width - 92,
-            favoriteIconHeightPosition: 18,
             textDirection: textDirection,
-            cardWidth: constraints.maxWidth,
+            favoriteIconHeightPosition: iconHeight,
+            favoriteIconPosition: endIconPosition,
+            itemsModel: itemsModel,
+            index: index,
+            heightImage: context.isTablet ? 150 : 110,
+            widthImage: 75,
+            bottomTitle: 50.w,
+            rightTitle: 100.w,
+            rightPrice: 100.w,
           );
         },
       ),

@@ -1,4 +1,7 @@
 
+## [1.0.1]
+### 1. Optimized responsive ui for mobile(Tablets) and Web.
+
 ## [1.0.0]
 ### 1. Add a textHeight parameter to Calculate the height of the entire text size, giving it enough space and giving the rest of the available space to the image.
 ### 2. Performance Optimizations**: Smoother animations with better resource management.
@@ -13,7 +16,6 @@
 ### 2. Fix bug onClick to Favorite icon.
 ### 3. Delete custom_local_hero code Example 
 ### 4. Add example to how to add custom image  
-
 
 ## [0.0.6]
 ### 1. Add parameter cardWidth, that for get card width for do flexible the titles and subtitles that inside positions to make it responsive .

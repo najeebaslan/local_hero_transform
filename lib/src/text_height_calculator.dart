@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../local_hero_transform.dart';
 
@@ -31,7 +32,7 @@ class TextHeightCalculator {
     if (style == null) return 0.0;
 
     final textPainter = TextPainter(
-      text: TextSpan(text: text, style: style),
+      text: TextSpan(text: text, style: style.copyWith(fontSize: style.fontSize?.sp)),
       maxLines: 1,
       textDirection: textDirection,
     )..layout();

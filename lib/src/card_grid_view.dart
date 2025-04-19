@@ -1,8 +1,11 @@
 /* File: local_hero_transform
-   Version: 1.0.0
+   Version: 1.0.1
 */
 
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:local_hero_transform/src/utils.dart'
+    show ContextExtension, CustomOnPressedFavoriteIcon, paddingHorizontal;
 
 import '../local_hero_transform.dart';
 
@@ -36,6 +39,11 @@ class CardGridView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    double beginAnimationWidth = (context.width * 0.5) - (paddingHorizontal * 2) - 16 / 21.5;
+
+    double endIconPosition = (context.width - (context.isTablet ? 130 : 100));
+    double iconHeight = context.isTablet ? 12.w : 12;
+    double iconPosition = context.isTablet ? 18.w : 18;
     return Hero(
       tag: tagHero,
       flightShuttleBuilder: (
@@ -50,48 +58,41 @@ class CardGridView extends StatelessWidget {
         final positionBottom = Tween<double>(begin: 50, end: 50).animate(animation);
 
         // Get render boxes for size information
-        final renderBoxFrom = fromHeroContext.findRenderObject() as RenderBox?;
         final renderBoxTo = toHeroContext.findRenderObject() as RenderBox?;
-
         // Size animations
         final animationHeight = Tween<double>(
-          begin: 90,
+          begin: 100,
           end: renderBoxTo!.size.height - textHeight,
         ).animate(animation);
 
-        final animationWidth = Tween<double>(
-          begin: 80,
-          end: renderBoxTo.size.width * 0.9,
-        ).animate(animation);
+        final animationWidth = Tween<double>(begin: 75, end: 170).animate(animation);
 
-        // Favorite icon position animations
         final favoriteIconPosition = Tween<double>(
-          begin: renderBoxFrom!.size.width - 72,
-          end: 18,
+          begin: endIconPosition,
+          end: iconPosition,
         ).animate(animation);
 
         final favoriteIconHeightPosition = Tween<double>(
-          begin: renderBoxFrom.size.height - 82,
-          end: 18,
+          begin: iconHeight,
+          end: iconPosition,
         ).animate(animation);
-
         return AnimatedBuilder(
           animation: animation,
           builder: (context, child) {
             return LayoutBuilder(builder: (context, constraints) {
               return BaseHeroCard(
+                cardWidth: beginAnimationWidth,
                 onPressedCard: onPressedCard,
-                heightImage: animationHeight.value,
-                index: index,
-                itemsModel: itemsModel,
-                widthImage: animationWidth.value,
-                bottomTitle: positionBottom.value,
-                rightTitle: positionRight.value,
-                rightPrice: positionRight.value,
-                favoriteIconPosition: favoriteIconPosition.value,
-                favoriteIconHeightPosition: favoriteIconHeightPosition.value,
                 textDirection: textDirection,
-                cardWidth: constraints.maxWidth,
+                favoriteIconHeightPosition: favoriteIconHeightPosition.value,
+                favoriteIconPosition: favoriteIconPosition.value,
+                itemsModel: itemsModel,
+                index: index,
+                heightImage: animationHeight.value,
+                widthImage: animationWidth.value,
+                bottomTitle: positionBottom.value.w,
+                rightTitle: positionRight.value.w,
+                rightPrice: positionRight.value.w,
               );
             });
           },
@@ -103,24 +104,25 @@ class CardGridView extends StatelessWidget {
       child: LayoutBuilder(
         builder: (context, constraints) {
           return BaseHeroCard(
+            cardWidth: beginAnimationWidth,
             onPressedCard: onPressedCard,
-            heightImage: _getImageHeight(constraints, context),
-            index: index,
-            itemsModel: itemsModel,
-            widthImage: MediaQuery.sizeOf(context).width > 420 ? 230 : 180,
-            bottomTitle: 50,
-            rightTitle: 10,
-            rightPrice: 10,
-            favoriteIconPosition: 18,
-            favoriteIconHeightPosition: 18,
             textDirection: textDirection,
-            cardWidth: constraints.maxWidth,
+            favoriteIconHeightPosition: iconPosition,
+            favoriteIconPosition: iconPosition,
+            itemsModel: itemsModel,
+            index: index,
+            heightImage: _getImageHeight(constraints, context),
+            widthImage: 170,
+            bottomTitle: 50.w,
+            rightTitle: 10.w,
+            rightPrice: 10.w,
           );
         },
       ),
     );
   }
 
-  double _getImageHeight(BoxConstraints constraints, BuildContext context) =>
-      constraints.maxHeight - textHeight;
+  double _getImageHeight(BoxConstraints constraints, BuildContext context) {
+    return constraints.maxHeight - textHeight;
+  }
 }

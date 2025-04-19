@@ -1,9 +1,11 @@
 /* File: local_hero_transform
-   Version: 1.0.0
+   Version: 1.0.1
 */
 
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:local_hero_transform/src/utils.dart'
+    show CustomOnPressedFavoriteIcon, paddingHorizontal, paddingVertical;
 
 import 'items_model.dart' show ItemsModel;
 
@@ -61,7 +63,7 @@ class BaseHeroCard extends StatelessWidget {
     final isRtl = textDirection == TextDirection.rtl;
 
     return ConstrainedBox(
-      constraints: BoxConstraints(maxHeight: heightImage),
+      constraints: BoxConstraints(maxHeight: heightImage.h),
       child: Container(
         decoration: BoxDecoration(
           border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
@@ -75,7 +77,7 @@ class BaseHeroCard extends StatelessWidget {
           color: Colors.white,
           borderRadius: BorderRadius.circular(24.0.r),
         ),
-        margin: EdgeInsets.symmetric(horizontal: 10.w, vertical: 8.h),
+        margin: EdgeInsets.symmetric(horizontal: paddingHorizontal, vertical: paddingVertical),
         child: InkWell(
           onTap: () => _onPassedCard(index, context),
           child: Stack(
@@ -91,7 +93,7 @@ class BaseHeroCard extends StatelessWidget {
               // Title text
               Positioned(
                 width: cardWidth * 0.8,
-                bottom: (bottomTitle / 1.7).h,
+                bottom: (bottomTitle / 1.7),
                 right: isRtl ? rightPrice : null,
                 left: !isRtl ? rightPrice : null,
                 child: Row(
@@ -117,10 +119,8 @@ class BaseHeroCard extends StatelessWidget {
                 ),
               ),
 
-              // Image
               _buildImage(),
 
-              // Favorite button
               _buildFavoriteButton(isRtl, context),
             ],
           ),
@@ -133,7 +133,9 @@ class BaseHeroCard extends StatelessWidget {
   Widget _buildTextWidget(Text textWidget) {
     return Text(
       textWidget.data ?? '',
-      style: textWidget.style,
+      style: textWidget.style?.copyWith(
+        fontSize: textWidget.style?.fontSize?.sp,
+      ),
       maxLines: 1,
       locale: textWidget.locale,
       overflow: TextOverflow.ellipsis,
@@ -153,7 +155,7 @@ class BaseHeroCard extends StatelessWidget {
   /// Builds the image portion of the card
   Widget _buildImage() {
     return Padding(
-      padding: EdgeInsets.all(8.0.h),
+      padding: EdgeInsets.all(8.0.w),
       child: ConstrainedBox(
         constraints: BoxConstraints(
           minHeight: heightImage.h,
@@ -170,10 +172,10 @@ class BaseHeroCard extends StatelessWidget {
             errorBuilder: (context, error, stackTrace) {
               return ColoredBox(
                 color: Colors.grey.shade100,
-                child: const Icon(
+                child: Icon(
                   Icons.error,
                   color: Colors.grey,
-                  size: 30,
+                  size: 30.w,
                 ),
               );
             },
@@ -185,6 +187,7 @@ class BaseHeroCard extends StatelessWidget {
 
   /// Builds the favorite button
   Positioned _buildFavoriteButton(bool isRtl, BuildContext context) {
+    // log(itemsModel.favoriteIconButton.key.)
     return Positioned(
       top: favoriteIconHeightPosition.abs(),
       right: isRtl ? favoriteIconPosition : null,
@@ -197,6 +200,3 @@ class BaseHeroCard extends StatelessWidget {
     onPressedCard(index);
   }
 }
-
-/// Signature for a callback when the favorite icon is pressed.
-typedef CustomOnPressedFavoriteIcon = void Function(int index);

@@ -1,5 +1,5 @@
 /* File: local_hero_transform
-   Version: 1.0.0
+   Version: 1.0.1
 */
 
 import 'package:flutter/material.dart';
@@ -70,7 +70,6 @@ class _LocalHeroState extends State<LocalHero> {
 
   @override
   Widget build(BuildContext context) {
-
     // Build the widget tree using a nested Navigator for tab transitions.
     return ScreenUtilInit(
       designSize:
