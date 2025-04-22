@@ -1,11 +1,11 @@
 /* File: local_hero_transform
-   Version: 1.0.1
+   Version: 1.0.2
 */
 
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:local_hero_transform/src/utils.dart'
-    show ContextExtension, CustomOnPressedFavoriteIcon, paddingHorizontal;
+    show ContextExtension, CustomOnPressedFavoriteIcon, imageHeightListView, paddingHorizontal;
 
 import '../local_hero_transform.dart';
 
@@ -14,7 +14,6 @@ class CardListView extends StatelessWidget {
   /// Creates a CustomCardListView widget.
   ///
   /// Required parameters:
-  /// - [textHeight]: Precalculated height for text content
   /// - [tagHero]: Unique tag for hero animation
   /// - [itemsModel]: Data model for the card
   /// - [index]: Index of this card
@@ -22,7 +21,6 @@ class CardListView extends StatelessWidget {
   /// - [onPressedCard]: Callback when card is pressed
   const CardListView({
     super.key,
-    required this.textHeight,
     required this.tagHero,
     required this.itemsModel,
     required this.index,
@@ -30,7 +28,6 @@ class CardListView extends StatelessWidget {
     required this.onPressedCard,
   });
 
-  final double textHeight;
   final String tagHero;
   final ItemsModel itemsModel;
   final int index;
@@ -39,86 +36,87 @@ class CardListView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    double endIconPosition = (context.width - (context.isTablet ? 130 : 100));
-
     double beginAnimationWidth = (context.width * 0.5) - (paddingHorizontal * 2) - 16 / 21.5;
-    double iconHeight = context.isTablet ? 12.w : 12;
-    double iconPosition = context.isTablet ? 18.w : 18;
+    double iconHeight = context.isTablet ? 18.w : 12.w;
 
-    return Hero(
-      tag: index,
-      flightShuttleBuilder: (
-        flightContext,
-        animation,
-        flightDirection,
-        fromHeroContext,
-        toHeroContext,
-      ) {
-        // Animation setup for hero transition
-        final positionRight = Tween<double>(begin: 10, end: 100).animate(animation);
-        final positionBottom = Tween<double>(begin: 50, end: 50).animate(animation);
+    return LayoutBuilder(builder: (context, constraints) {
+      return Hero(
+        tag: index,
+        flightShuttleBuilder: (
+          flightContext,
+          animation,
+          flightDirection,
+          fromHeroContext,
+          toHeroContext,
+        ) {
+          double heightCard =
+              (fromHeroContext.findRenderObject() as RenderBox).size.height - paddingHorizontal * 2;
 
-        final renderBoxFrom = fromHeroContext.findRenderObject() as RenderBox?;
+          /// widthGridCard it's equal width grid card
+          double widthCard =
+              (fromHeroContext.findRenderObject() as RenderBox).size.width - paddingHorizontal * 2;
 
-        final animationHeight = Tween<double>(
-          begin: renderBoxFrom!.size.height - textHeight,
-          end: 100,
-        ).animate(animation);
+          final positionRight = Tween<double>(begin: 10, end: 100).animate(animation);
+          final positionBottom = Tween<double>(begin: 50, end: 50).animate(animation);
 
-        final animationWidth = Tween<double>(begin: 170, end: 75).animate(animation);
+          final animationHeight = Tween<double>(begin: heightCard, end: 90).animate(animation);
 
-        final favoriteIconPosition = Tween<double>(
-          begin: iconPosition,
-          end: endIconPosition,
-        ).animate(animation);
+          final animationWidth = Tween<double>(begin: widthCard, end: 90.w).animate(animation);
 
-        final favoriteIconHeightPosition = Tween<double>(
-          begin: iconPosition,
-          end: iconHeight,
-        ).animate(animation);
-        return AnimatedBuilder(
-          animation: animation,
-          builder: (context, child) {
-            return LayoutBuilder(builder: (context, constraints) {
-              return BaseHeroCard(
-                cardWidth: beginAnimationWidth,
-                onPressedCard: onPressedCard,
-                index: index,
-                textDirection: textDirection,
-                itemsModel: itemsModel,
-                heightImage: animationHeight.value,
-                widthImage: animationWidth.value,
-                bottomTitle: positionBottom.value.w,
-                rightTitle: positionRight.value.w,
-                rightPrice: positionRight.value.w,
-                favoriteIconPosition: favoriteIconPosition.value,
-                favoriteIconHeightPosition: favoriteIconHeightPosition.value,
-              );
-            });
-          },
-        );
-      },
-      createRectTween: (Rect? begin, Rect? end) {
-        return MaterialRectCenterArcTween(begin: begin, end: end);
-      },
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          return BaseHeroCard(
-            cardWidth: constraints.maxWidth - 80.w,
-            onPressedCard: onPressedCard,
-            textDirection: textDirection,
-            favoriteIconHeightPosition: iconHeight,
-            favoriteIconPosition: endIconPosition,
-            itemsModel: itemsModel,
-            index: index,
-            heightImage: context.isTablet ? 150 : 110,
-            widthImage: 75,
-            bottomTitle: 50.w,
-            rightTitle: 100.w,
-            rightPrice: 100.w,
+          final favoriteIconPosition = Tween<double>(
+            begin: iconHeight,
+            end: constraints.maxWidth - 90.w,
+          ).animate(animation);
+
+          final favoriteIconHeightPosition = Tween<double>(
+            begin: iconHeight,
+            end: (imageHeightListView / 6).w,
+          ).animate(animation);
+
+          return AnimatedBuilder(
+            animation: animation,
+            builder: (context, child) {
+              return LayoutBuilder(builder: (context, constraints) {
+                return BaseHeroCard(
+                  cardWidth: beginAnimationWidth,
+                  onPressedCard: onPressedCard,
+                  index: index,
+                  textDirection: textDirection,
+                  itemsModel: itemsModel,
+                  heightImage: animationHeight.value,
+                  widthImage: animationWidth.value,
+                  bottomTitle: positionBottom.value.w,
+                  rightTitle: positionRight.value.w,
+                  rightPrice: positionRight.value.w,
+                  favoriteIconPosition: favoriteIconPosition.value,
+                  favoriteIconHeightPosition: favoriteIconHeightPosition.value,
+                );
+              });
+            },
           );
         },
-      ),
-    );
+        createRectTween: (Rect? begin, Rect? end) {
+          return MaterialRectCenterArcTween(begin: begin, end: end);
+        },
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            return BaseHeroCard(
+              cardWidth: constraints.maxWidth - 80.w,
+              onPressedCard: onPressedCard,
+              textDirection: textDirection,
+              favoriteIconHeightPosition: (imageHeightListView / 6).w,
+              favoriteIconPosition: constraints.maxWidth - 90.w,
+              itemsModel: itemsModel,
+              index: index,
+              heightImage: imageHeightListView,
+              widthImage: 90.w,
+              bottomTitle: 50.w,
+              rightTitle: 100.w,
+              rightPrice: 100.w,
+            );
+          },
+        ),
+      );
+    });
   }
 }

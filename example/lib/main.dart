@@ -115,10 +115,10 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
       ),
-      subTitleIcon: const Icon(
+      subTitleIcon: Icon(
         Icons.location_on_outlined,
         color: Color(0xFF95979A),
-        size: 15,
+        size: MediaQuery.sizeOf(context).width * 0.03,
       ),
       favoriteIconButton: _buildFavoriteButton(),
     );
@@ -134,10 +134,10 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
               (states) => isFavored ? Colors.redAccent : Colors.grey,
             ),
           ),
-          icon: const Icon(
+          icon: Icon(
             Icons.favorite,
             color: Colors.white,
-            size: 24,
+            size: MediaQuery.sizeOf(context).width * 0.06,
           ),
           onPressed: () => setState(() => isFavored = !isFavored),
         );

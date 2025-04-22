@@ -1,9 +1,10 @@
 /* File: local_hero_transform
-   Version: 1.0.1
+   Version: 1.0.2
 */
 
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:local_hero_transform/src/utils.dart';
 
 /// LocalHero widget that provides a tabbed navigation with smooth transitions.
 class LocalHero extends StatefulWidget {
@@ -72,8 +73,7 @@ class _LocalHeroState extends State<LocalHero> {
   Widget build(BuildContext context) {
     // Build the widget tree using a nested Navigator for tab transitions.
     return ScreenUtilInit(
-      designSize:
-          widget.designSize ?? const Size(428, 926), // Set design size for responsive layout.
+      designSize: widget.designSize ?? context.designSize, // Set design size for responsive layout.
       minTextAdapt: true, // Allow text to adapt to screen size.
       enableScaleText: () => false, // Disable text scaling.
       splitScreenMode: true, // Enable split screen mode for responsive design.

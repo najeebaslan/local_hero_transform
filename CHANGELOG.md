@@ -1,4 +1,10 @@
 
+## [1.0.2]
+### 1. Support web responsive 🚀
+### 2. Add default designSize for mobile and tablet
+### 3. Update code example for support responsive icons
+
+
 ## [1.0.1]
 ### 1. Optimized responsive ui for mobile(Tablets) and Web.
 

@@ -1,4 +1,4 @@
-# LocalHeroTransform ![](https://img.shields.io/badge/build-1.0.1-brightgreen)   [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+# LocalHeroTransform ![](https://img.shields.io/badge/build-1.0.2-brightgreen)   [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 local hero transform is A Flutter package for creating seamless hero transitions between grid and list views with enhanced customization and performance for optimize user experience .
 
 
@@ -25,7 +25,7 @@ Add `local_hero_transform` to your `pubspec.yaml` file:
 
 ```yaml
 dependencies:
-local_hero_transform: ^1.0.1
+local_hero_transform: ^1.0.2
 ```
 ## Usage
 

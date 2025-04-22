@@ -1,11 +1,11 @@
 /* File: local_hero_transform
-   Version: 1.0.1
+   Version: 1.0.2
 */
 
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:local_hero_transform/src/utils.dart'
-    show CustomOnPressedFavoriteIcon, paddingHorizontal, paddingVertical;
+    show CustomOnPressedFavoriteIcon, paddingHorizontal, paddingImageAll, paddingVertical;
 
 import 'items_model.dart' show ItemsModel;
 
@@ -63,7 +63,7 @@ class BaseHeroCard extends StatelessWidget {
     final isRtl = textDirection == TextDirection.rtl;
 
     return ConstrainedBox(
-      constraints: BoxConstraints(maxHeight: heightImage.h),
+      constraints: BoxConstraints(maxHeight: heightImage.w),
       child: Container(
         decoration: BoxDecoration(
           border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
@@ -158,14 +158,14 @@ class BaseHeroCard extends StatelessWidget {
       padding: EdgeInsets.all(8.0.w),
       child: ConstrainedBox(
         constraints: BoxConstraints(
-          minHeight: heightImage.h,
-          minWidth: widthImage.w,
+          minHeight: widthImage - paddingImageAll * 2,
+          minWidth: widthImage - paddingImageAll * 2,
         ),
         child: ClipRRect(
           borderRadius: BorderRadius.circular(16.r),
           child: Image(
-            height: heightImage.h,
-            width: widthImage.w,
+            height: widthImage - paddingImageAll * 2,
+            width: widthImage - paddingImageAll * 2,
             fit: BoxFit.cover,
             image: itemsModel.image.image,
             alignment: itemsModel.image.alignment,
@@ -187,7 +187,6 @@ class BaseHeroCard extends StatelessWidget {
 
   /// Builds the favorite button
   Positioned _buildFavoriteButton(bool isRtl, BuildContext context) {
-    // log(itemsModel.favoriteIconButton.key.)
     return Positioned(
       top: favoriteIconHeightPosition.abs(),
       right: isRtl ? favoriteIconPosition : null,
