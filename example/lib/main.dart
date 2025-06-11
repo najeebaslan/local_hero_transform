@@ -127,6 +127,9 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
         // itemColor: isDarkMode ? AppColors.darkItemColor : AppColors.lightItemColor,
         // animationShimmerColor: isDarkMode ? AppColors.darkShimmerColor : Colors.grey[300]!,
       ),
+      loadingImageBuilder: (context, child, loadingProgress) {
+        return CustomShimmer(isDark: widget.themeNotifier.value == ThemeMode.dark);
+      },
       image: DecorationImage(image: NetworkImage(location.imageUrl), fit: BoxFit.cover),
       name: Text(location.name, style: textTheme.name),
       title: Text(location.place, style: textTheme.title),

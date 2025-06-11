@@ -1,5 +1,5 @@
 /*File : local_hero_transform
-Version : 1.0.3
+Version : 1.0.4
 */
 library local_hero_transform;
 

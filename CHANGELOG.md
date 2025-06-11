@@ -1,10 +1,14 @@
+## [1.0.4]
+### 1. Add Card GradientColor.
+### 2. Add Loading Image Builder.
+
+
 ## [1.0.3]
 ### 1. Support Dark and Light Theme.
 ### 2. Add Card Loading.
 ### 3. Customize Card Loading Colors.
 ### 4. Customize ItemsModel like[name, title, subTitle] as Widget to make user able to customize Widgets UI.
 ### 5. Add CardStyleMode like [isDarkMode, isLoading, animationShimmerColor, itemColor,cardColor].
-
 
 
 ## [1.0.2]

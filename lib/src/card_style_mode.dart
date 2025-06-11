@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 class CardStyleMode {
   final Color? cardColor;
+  final Gradient? cardGradientColor;
   final Color? itemColor;
   final Color? animationShimmerColor;
   final bool? isLoading;
@@ -9,6 +10,7 @@ class CardStyleMode {
 
   CardStyleMode({
     this.cardColor,
+    this.cardGradientColor,
     this.isLoading,
     this.itemColor,
     this.isDarkMode = false,
@@ -26,4 +28,5 @@ class CardStyleMode {
   static Color getAnimationShimmerColor(bool isDarkMode) {
     return isDarkMode ? Color.fromARGB(255, 36, 39, 92) : Colors.white;
   }
+  
 }

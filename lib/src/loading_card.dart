@@ -113,20 +113,6 @@ class ShimmerBaseHeroCard extends StatelessWidget {
                 borderRadius: BorderRadius.circular(4.r),
               ),
             ),
-
-            // Shimmer Placeholder for Favorite Button
-            // Positioned(
-            //   top: favoriteIconHeightPosition.abs(),
-            //   right: isRtl ? favoriteIconPosition : null,
-            //   left: !isRtl ? favoriteIconPosition : null,
-            //   child: CustomShimmer(
-            //     animationShimmerColor: cardStyleMode.animationShimmerColor,
-            //     backgroundColor: cardStyleMode.itemBackgroundColor,
-            //     isCircle: true,
-            //     height: 24.w,
-            //     width: 24.w,
-            //   ),
-            // ),
           ],
         ),
       ),

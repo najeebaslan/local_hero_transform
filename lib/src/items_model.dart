@@ -1,8 +1,8 @@
 /*File : local_hero_transform
-Version : 1.0.3
+Version : 1.0.4
 */
 
-import 'package:flutter/material.dart' show Widget;
+import 'package:flutter/material.dart' show BuildContext, ImageChunkEvent, Widget;
 import 'package:flutter/widgets.dart' show DecorationImage;
 
 import 'card_style_mode.dart';
@@ -30,6 +30,7 @@ class ItemsModel {
     required this.subTitle,
     this.subTitleIcon,
     this.cardStyleMode,
+    this.loadingImageBuilder,
     required this.favoriteIconButton,
   });
 
@@ -39,5 +40,7 @@ class ItemsModel {
   final Widget favoriteIconButton;
   final Widget? subTitleIcon;
   final DecorationImage image;
+  final Widget Function(BuildContext context, Widget child, ImageChunkEvent? loadingProgress)?
+      loadingImageBuilder;
   final CardStyleMode? cardStyleMode;
 }

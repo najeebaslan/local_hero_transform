@@ -1,5 +1,5 @@
 /* File: local_hero_transform
-   Version: 1.0.3
+   Version: 1.0.4
 */
 
 import 'package:flutter/material.dart';
@@ -90,6 +90,7 @@ class BaseHeroCard extends StatelessWidget {
             constraints: BoxConstraints(maxHeight: heightImage.w),
             child: Container(
               decoration: BoxDecoration(
+                gradient: itemsModel.cardStyleMode?.cardGradientColor,
                 border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
                 boxShadow: [
                   BoxShadow(
@@ -98,8 +99,10 @@ class BaseHeroCard extends StatelessWidget {
                     offset: const Offset(0, 5),
                   ),
                 ],
-                color: itemsModel.cardStyleMode?.cardColor ??
-                    CardStyleMode.getCardColor(itemsModel.cardStyleMode?.isDarkMode ?? false),
+                color: itemsModel.cardStyleMode?.cardGradientColor != null
+                    ? null
+                    : itemsModel.cardStyleMode?.cardColor ??
+                        CardStyleMode.getCardColor(itemsModel.cardStyleMode?.isDarkMode ?? false),
                 borderRadius: BorderRadius.circular(24.0.r),
               ),
               margin:
@@ -196,6 +199,24 @@ class BaseHeroCard extends StatelessWidget {
             height: widthImage - paddingImageAll * 2,
             width: widthImage - paddingImageAll * 2,
             fit: BoxFit.cover,
+            loadingBuilder: (context, child, loadingProgress) {
+              if (loadingProgress == null) return child;
+
+              if (itemsModel.loadingImageBuilder != null) {
+                return SizedBox(
+                    height: widthImage - paddingImageAll * 2,
+                    width: widthImage - paddingImageAll * 2,
+                    child: itemsModel.loadingImageBuilder!(context, child, loadingProgress));
+              }
+
+              return Center(
+                child: CircularProgressIndicator(
+                  value: loadingProgress.expectedTotalBytes != null
+                      ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!
+                      : null,
+                ),
+              );
+            },
             image: itemsModel.image.image,
             alignment: itemsModel.image.alignment,
             errorBuilder: (context, error, stackTrace) {
