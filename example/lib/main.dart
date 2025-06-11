@@ -1,26 +1,49 @@
 import 'package:flutter/material.dart';
 import 'package:local_hero_transform/local_hero_transform.dart';
 
-void main() => runApp(const MyApp());
+void main() {
+  runApp(const MyApp());
+}
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
   @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  final _themeNotifier = ValueNotifier(ThemeMode.light);
+
+  @override
+  void dispose() {
+    _themeNotifier.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      theme: ThemeData.dark().copyWith(
-        scaffoldBackgroundColor: backgroundColor,
+    return ValueListenableBuilder<ThemeMode>(
+      valueListenable: _themeNotifier,
+      builder: (_, themeMode, __) => MaterialApp(
+        title: 'Flutter Demo',
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData.light().copyWith(
+          scaffoldBackgroundColor: AppColors.backgroundColor,
+        ),
+        darkTheme: ThemeData.dark().copyWith(
+          scaffoldBackgroundColor: AppColors.darkBackgroundColor,
+        ),
+        themeMode: themeMode,
+        home: MyHomePage(themeNotifier: _themeNotifier),
       ),
-      title: 'Flutter Demo',
-      debugShowCheckedModeBanner: false,
-      home: const MyHomePage(),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key});
+  const MyHomePage({super.key, required this.themeNotifier});
+  final ValueNotifier<ThemeMode> themeNotifier;
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
@@ -28,103 +51,116 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateMixin {
   late final TabController _tabController;
-  late final ValueNotifier<FavoriteShape> _switchNotifier;
-  late final ValueNotifier<TextDirection> _changeLanguage;
+  late final ValueNotifier<FavoriteShape> _viewModeNotifier;
+  late final ValueNotifier<TextDirection> _languageNotifier;
 
   @override
   void initState() {
     super.initState();
-    _switchNotifier = ValueNotifier(FavoriteShape.gird);
-    _changeLanguage = ValueNotifier(TextDirection.ltr);
+    _viewModeNotifier = ValueNotifier(FavoriteShape.grid);
+    _languageNotifier = ValueNotifier(TextDirection.ltr);
     _tabController = TabController(length: 2, vsync: this)..addListener(_handleTabChange);
   }
 
   void _handleTabChange() {
     if (!_tabController.indexIsChanging) {
-      _switchNotifier.value = _tabController.index == 0 ? FavoriteShape.gird : FavoriteShape.list;
+      _viewModeNotifier.value = _tabController.index == 0 ? FavoriteShape.grid : FavoriteShape.list;
     }
   }
 
   @override
   void dispose() {
-    _tabController.removeListener(_handleTabChange);
-    _tabController.dispose();
-    _switchNotifier.dispose();
-    _changeLanguage.dispose();
+    _tabController
+      ..removeListener(_handleTabChange)
+      ..dispose();
+    _viewModeNotifier.dispose();
+    _languageNotifier.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: _buildAppBar(),
-      body: ValueListenableBuilder<TextDirection>(
-        valueListenable: _changeLanguage,
-        builder: (context, textDirection, _) {
-          return Directionality(
-            textDirection: textDirection,
-            child: LocalHeroViews(
-              tabController: _tabController,
-              onPressedCard: (index) => _navigateToDetailsScreen(
-                context,
-                locations[index].name,
-                locations[index].imageUrl,
-              ),
-              textDirection: textDirection,
-              itemCount: locations.length,
-              itemsModel: (index) => _buildItemsModel(index),
-            ),
-          );
-        },
+      appBar: _buildAppBar(context),
+      body: _buildBody(),
+    );
+  }
+
+  Widget _buildBody() {
+    return ValueListenableBuilder<TextDirection>(
+      valueListenable: _languageNotifier,
+      builder: (context, textDirection, _) => Directionality(
+        textDirection: textDirection,
+        child: LocalHeroViews(
+          tabController: _tabController,
+          onPressedCard: _handleCardPressed,
+          textDirection: textDirection,
+          itemCount: locations.length,
+          itemsModel: _buildItemsModel,
+        ),
+      ),
+    );
+  }
+
+  void _handleCardPressed(int index) {
+    final location = locations[index];
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => DetailsScreen(name: location.name, imageUrl: location.imageUrl),
       ),
     );
   }
 
   ItemsModel _buildItemsModel(int index) {
+    final isDarkMode = widget.themeNotifier.value == ThemeMode.dark;
+    final location = locations[index];
+    final textTheme = _buildTextTheme();
+
     return ItemsModel(
-      image: DecorationImage(
-        image: NetworkImage(locations[index].imageUrl),
-        fit: BoxFit.cover,
+      cardStyleMode: CardStyleMode(
+        isDarkMode: isDarkMode,
+        isLoading: false,
+
+        ///Todo: Uncomment the following lines if you want to use custom colors
+        // cardColor: isDarkMode ? AppColors.darkCardColor : Colors.white,
+        // itemColor: isDarkMode ? AppColors.darkItemColor : AppColors.lightItemColor,
+        // animationShimmerColor: isDarkMode ? AppColors.darkShimmerColor : Colors.grey[300]!,
       ),
-      name: Text(
-        locations[index].name,
-        style: const TextStyle(
-          color: Colors.black,
-          fontSize: 16,
-          fontWeight: FontWeight.w500,
-        ),
-        maxLines: 1,
-      ),
-      title: Text(
-        locations[index].place,
-        style: const TextStyle(
-          color: Colors.blue,
-          fontSize: 14,
-          fontWeight: FontWeight.w500,
-        ),
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
-      ),
-      subTitle: Text(
-        locations[index].subtitle,
-        style: const TextStyle(
-          color: Color(0xFF95979A),
-          fontSize: 13,
-          fontWeight: FontWeight.w400,
-        ),
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
-      ),
+      image: DecorationImage(image: NetworkImage(location.imageUrl), fit: BoxFit.cover),
+      name: Text(location.name, style: textTheme.name),
+      title: Text(location.place, style: textTheme.title),
+      subTitle: Text(location.subtitle, style: textTheme.subTitle),
       subTitleIcon: Icon(
         Icons.location_on_outlined,
-        color: Color(0xFF95979A),
+        color: AppColors.subtitleColor,
         size: MediaQuery.sizeOf(context).width * 0.03,
       ),
       favoriteIconButton: _buildFavoriteButton(),
     );
   }
 
-  StatefulBuilder _buildFavoriteButton() {
+  _TextTheme _buildTextTheme() {
+    return _TextTheme(
+      name: TextStyle(
+        color: widget.themeNotifier.value == ThemeMode.dark ? Colors.white : Colors.black,
+        fontSize: 16,
+        fontWeight: FontWeight.w500,
+      ),
+      title: TextStyle(
+        color: Colors.blue,
+        fontSize: 14,
+        fontWeight: FontWeight.w500,
+      ),
+      subTitle: TextStyle(
+        color: AppColors.subtitleColor,
+        fontSize: 13,
+        fontWeight: FontWeight.w400,
+      ),
+    );
+  }
+
+  Widget _buildFavoriteButton() {
     bool isFavored = true;
     return StatefulBuilder(
       builder: (context, setState) {
@@ -145,10 +181,10 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
     );
   }
 
-  AppBar _buildAppBar() {
+  AppBar _buildAppBar(BuildContext context) {
     return AppBar(
-      backgroundColor: backgroundColor,
-      surfaceTintColor: backgroundColor,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      surfaceTintColor: Theme.of(context).scaffoldBackgroundColor,
       actions: [
         _buildLanguageButtons(),
         const Spacer(),
@@ -168,6 +204,8 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
           _buildLanguageButton(TextDirection.rtl, '🇸🇦'),
           const SizedBox(width: 8),
           _buildLanguageButton(TextDirection.ltr, '🇺🇸'),
+          const SizedBox(width: 8),
+          _buildThemeToggleButton(),
         ],
       ),
     );
@@ -175,47 +213,61 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
 
   IconButton _buildLanguageButton(TextDirection direction, String emoji) {
     return IconButton(
-      style: ButtonStyle(
-        backgroundColor: WidgetStatePropertyAll(
-          Colors.grey.withValues(alpha: 0.3),
-        ),
-      ),
-      onPressed: () => _changeLanguage.value = direction,
+      style: _iconButtonStyle,
+      onPressed: () => _languageNotifier.value = direction,
       icon: Text(emoji),
+    );
+  }
+
+  final _iconButtonStyle = ButtonStyle(
+    backgroundColor: WidgetStatePropertyAll(Colors.grey.withValues(alpha: 0.3)),
+  );
+  Widget _buildThemeToggleButton() {
+    return ValueListenableBuilder<ThemeMode>(
+      valueListenable: widget.themeNotifier,
+      builder: (context, themeMode, _) {
+        bool isDarkMode = themeMode == ThemeMode.dark;
+        return IconButton(
+          style: _iconButtonStyle,
+          icon: Icon(
+            isDarkMode ? Icons.light_mode : Icons.dark_mode_outlined,
+            color: isDarkMode ? Colors.white : Colors.grey,
+          ),
+          onPressed: () => widget.themeNotifier.value =
+              themeMode == ThemeMode.dark ? ThemeMode.light : ThemeMode.dark,
+        );
+      },
     );
   }
 
   Widget _buildViewToggleButton() {
     return ValueListenableBuilder<FavoriteShape>(
-      valueListenable: _switchNotifier,
-      builder: (context, value, _) {
-        return ConstrainedBox(
-          constraints: BoxConstraints.tight(Size(35, 35)),
-          child: AspectRatio(
-            aspectRatio: 1.9 / 2,
-            child: RawMaterialButton(
-              onPressed: _toggleView,
-              elevation: 0,
-              visualDensity: const VisualDensity(
-                vertical: -4,
-                horizontal: -4,
-              ),
-              shape: RoundedRectangleBorder(
-                side: const BorderSide(color: Colors.black, width: 0.2),
-                borderRadius: BorderRadius.circular(5),
-              ),
-              fillColor: Colors.blue,
-              child: Icon(
-                value == FavoriteShape.gird ? Icons.grid_view_rounded : Icons.view_agenda_outlined,
-                size: 16,
-                color: Colors.white,
-              ),
+      valueListenable: _viewModeNotifier,
+      builder: (context, value, _) => ConstrainedBox(
+        constraints: BoxConstraints.tight(Size(35, 35)),
+        child: AspectRatio(
+          aspectRatio: 1.9 / 2,
+          child: RawMaterialButton(
+            onPressed: _toggleView,
+            elevation: 0,
+            visualDensity: const VisualDensity(vertical: -4, horizontal: -4),
+            shape: _buttonShape,
+            fillColor: Colors.blue,
+            child: Icon(
+              value == FavoriteShape.grid ? Icons.grid_view_rounded : Icons.view_agenda_outlined,
+              size: 16,
+              color: Colors.white,
             ),
           ),
-        );
-      },
+        ),
+      ),
     );
   }
+
+  final _buttonShape = RoundedRectangleBorder(
+    side: const BorderSide(color: Colors.black, width: 0.2),
+    borderRadius: BorderRadius.circular(5),
+  );
 
   void _toggleView() {
     final newIndex = _tabController.index == 0 ? 1 : 0;
@@ -223,30 +275,72 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
   }
 }
 
-void _navigateToDetailsScreen(BuildContext context, String name, String imageUrl) {
-  Navigator.push(
-    context,
-    MaterialPageRoute(
-      builder: (_) => DetailsScreen(name: name, imageUrl: imageUrl),
-    ),
-  );
+class _TextTheme {
+  final TextStyle name;
+  final TextStyle title;
+  final TextStyle subTitle;
+
+  const _TextTheme({
+    required this.name,
+    required this.title,
+    required this.subTitle,
+  });
 }
 
-const urlPrefix = 'https://docs.flutter.dev/cookbook/img-files/effects/parallax';
+class AppColors {
+  static const backgroundColor = Color(0xFFF2F3F8);
+  static const darkBackgroundColor = Color(0xff10122C);
+  static const darkCardColor = Color.fromARGB(255, 36, 39, 92);
+  static const darkItemColor = Color.fromARGB(255, 13, 13, 29);
+  static const darkShimmerColor = Color.fromARGB(255, 36, 39, 92);
+  static const lightItemColor = Color(0xFFEEEEEE);
+  static const subtitleColor = Color(0xFF95979A);
+}
+
+enum FavoriteShape { grid, list }
+
+class DetailsScreen extends StatelessWidget {
+  const DetailsScreen({
+    super.key,
+    required this.name,
+    required this.imageUrl,
+  });
+
+  final String name;
+  final String imageUrl;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.indigoAccent,
+        title: Text(name),
+      ),
+      body: Center(
+        child: AspectRatio(
+          aspectRatio: 16 / 14,
+          child: Image.network(imageUrl, fit: BoxFit.cover),
+        ),
+      ),
+    );
+  }
+}
 
 class Location {
+  final String name;
+  final String place;
+  final String imageUrl;
+  final String subtitle;
+
   const Location({
     required this.name,
     required this.place,
     required this.imageUrl,
     required this.subtitle,
   });
-
-  final String name;
-  final String place;
-  final String imageUrl;
-  final String subtitle;
 }
+
+const urlPrefix = 'https://docs.flutter.dev/cookbook/img-files/effects/parallax';
 
 const locations = [
   Location(
@@ -298,34 +392,3 @@ const locations = [
     subtitle: 'Ancient architecture',
   ),
 ];
-
-const backgroundColor = Color(0xFFF2F3F8);
-
-enum FavoriteShape { gird, list }
-
-class DetailsScreen extends StatelessWidget {
-  const DetailsScreen({
-    super.key,
-    required this.name,
-    required this.imageUrl,
-  });
-
-  final String name;
-  final String imageUrl;
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.indigoAccent,
-        title: Text(name),
-      ),
-      body: Center(
-        child: AspectRatio(
-          aspectRatio: 16 / 14,
-          child: Image.network(imageUrl, fit: BoxFit.cover),
-        ),
-      ),
-    );
-  }
-}

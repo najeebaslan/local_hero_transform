@@ -1,5 +1,5 @@
 /* File: local_hero_transform
-   Version: 1.0.2
+   Version: 1.0.3
 */
 
 import 'package:flutter/material.dart';
@@ -7,7 +7,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:local_hero_transform/src/utils.dart'
     show CustomOnPressedFavoriteIcon, paddingHorizontal, paddingImageAll, paddingVertical;
 
-import 'items_model.dart' show ItemsModel;
+import '../local_hero_transform.dart';
 
 /// The base widget that builds the actual card content.
 ///
@@ -29,6 +29,7 @@ class BaseHeroCard extends StatelessWidget {
   /// - [textDirection]: Text direction for layout
   /// - [cardWidth]: Width of the card
   /// - [onPressedCard]: Callback when card is pressed
+
   const BaseHeroCard({
     super.key,
     required this.heightImage,
@@ -62,75 +63,103 @@ class BaseHeroCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final isRtl = textDirection == TextDirection.rtl;
 
-    return ConstrainedBox(
-      constraints: BoxConstraints(maxHeight: heightImage.w),
-      child: Container(
-        decoration: BoxDecoration(
-          border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
-          boxShadow: [
-            BoxShadow(
-              blurRadius: 10,
-              color: const Color(0xFF3A5160).withValues(alpha: 0.1),
-              offset: const Offset(0, 5),
+    return itemsModel.cardStyleMode?.isLoading == true
+        ? ShimmerBaseHeroCard(
+            cardStyleMode: CardStyleMode(
+              isLoading: itemsModel.cardStyleMode?.isLoading ?? false,
+              cardColor: itemsModel.cardStyleMode?.cardColor ??
+                  CardStyleMode.getCardColor(itemsModel.cardStyleMode?.isDarkMode ?? false),
+              itemColor: itemsModel.cardStyleMode?.itemColor ??
+                  CardStyleMode.getItemBackgroundColor(
+                      itemsModel.cardStyleMode?.isDarkMode ?? false),
+              animationShimmerColor: itemsModel.cardStyleMode?.animationShimmerColor ??
+                  CardStyleMode.getAnimationShimmerColor(
+                      itemsModel.cardStyleMode?.isDarkMode ?? false),
             ),
-          ],
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(24.0.r),
-        ),
-        margin: EdgeInsets.symmetric(horizontal: paddingHorizontal, vertical: paddingVertical),
-        child: InkWell(
-          onTap: () => _onPassedCard(index, context),
-          child: Stack(
-            children: [
-              // Name text
-              Positioned(
-                bottom: bottomTitle,
-                right: isRtl ? rightTitle : 10.w,
-                left: !isRtl ? rightTitle : 10.w,
-                child: _buildTextWidget(itemsModel.name),
+            heightImage: heightImage,
+            widthImage: widthImage,
+            bottomTitle: bottomTitle,
+            rightTitle: rightTitle,
+            rightPrice: rightPrice,
+            favoriteIconPosition: favoriteIconPosition,
+            favoriteIconHeightPosition: favoriteIconHeightPosition,
+            textDirection: textDirection,
+            cardWidth: cardWidth,
+          )
+        : ConstrainedBox(
+            constraints: BoxConstraints(maxHeight: heightImage.w),
+            child: Container(
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+                boxShadow: [
+                  BoxShadow(
+                    blurRadius: 10,
+                    color: const Color(0xFF3A5160).withValues(alpha: 0.1),
+                    offset: const Offset(0, 5),
+                  ),
+                ],
+                color: itemsModel.cardStyleMode?.cardColor ??
+                    CardStyleMode.getCardColor(itemsModel.cardStyleMode?.isDarkMode ?? false),
+                borderRadius: BorderRadius.circular(24.0.r),
               ),
-
-              // Title text
-              Positioned(
-                width: cardWidth * 0.8,
-                bottom: (bottomTitle / 1.7),
-                right: isRtl ? rightPrice : null,
-                left: !isRtl ? rightPrice : null,
-                child: Row(
+              margin:
+                  EdgeInsets.symmetric(horizontal: paddingHorizontal, vertical: paddingVertical),
+              child: InkWell(
+                onTap: () => _onPassedCard(index, context),
+                child: Stack(
                   children: [
-                    Expanded(child: _buildTextWidget(itemsModel.title)),
+                    // Name text
+                    Positioned(
+                      bottom: bottomTitle,
+                      right: isRtl ? rightTitle : 10.w,
+                      left: !isRtl ? rightTitle : 10.w,
+                      child: _buildTextWidget(itemsModel.name),
+                    ),
+
+                    // Title text
+                    Positioned(
+                      width: cardWidth * 0.8,
+                      bottom: (bottomTitle / 1.7),
+                      right: isRtl ? rightPrice : null,
+                      left: !isRtl ? rightPrice : null,
+                      child: Row(
+                        children: [
+                          Expanded(child: _buildTextWidget(itemsModel.title)),
+                        ],
+                      ),
+                    ),
+
+                    // Subtitle with location icon
+                    Positioned(
+                      bottom: bottomTitle / 6,
+                      width: cardWidth * 0.8,
+                      right: isRtl ? rightPrice : null,
+                      left: !isRtl ? rightPrice : null,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          if (itemsModel.subTitleIcon != null) itemsModel.subTitleIcon!,
+                          SizedBox(width: 1.w),
+                          Flexible(child: _buildTextWidget(itemsModel.subTitle)),
+                        ],
+                      ),
+                    ),
+
+                    _buildImage(),
+
+                    _buildFavoriteButton(isRtl, context),
                   ],
                 ),
               ),
-
-              // Subtitle with location icon
-              Positioned(
-                bottom: bottomTitle / 6,
-                width: cardWidth * 0.8,
-                right: isRtl ? rightPrice : null,
-                left: !isRtl ? rightPrice : null,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    if (itemsModel.subTitleIcon != null) itemsModel.subTitleIcon!,
-                    SizedBox(width: 1.w),
-                    Flexible(child: _buildTextWidget(itemsModel.subTitle)),
-                  ],
-                ),
-              ),
-
-              _buildImage(),
-
-              _buildFavoriteButton(isRtl, context),
-            ],
-          ),
-        ),
-      ),
-    );
+            ),
+          );
   }
 
   /// Builds a Text widget from the given properties
-  Widget _buildTextWidget(Text textWidget) {
+  Widget _buildTextWidget(Widget textWidget) {
+    if (textWidget is! Text) {
+      return textWidget;
+    }
     return Text(
       textWidget.data ?? '',
       style: textWidget.style?.copyWith(

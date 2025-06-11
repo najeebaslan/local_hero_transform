@@ -1,9 +1,11 @@
 /*File : local_hero_transform
-Version : 1.0.2
+Version : 1.0.3
 */
 
-import 'package:flutter/material.dart' show Text, Widget;
+import 'package:flutter/material.dart' show Widget;
 import 'package:flutter/widgets.dart' show DecorationImage;
+
+import 'card_style_mode.dart';
 
 /// Data model for hero card content and styling.
 ///
@@ -19,19 +21,23 @@ class ItemsModel {
   /// - [subTitleIcon]: Widget that returns the subtitle Icon widget
   /// - [image]: Widget that returns the DecorationImage for a given index
   /// - [favoriteIconButton]: Function that returns the favorite icon widget
+  /// - [cardStyleMode]: Widget that returns the card style
+  ///
   const ItemsModel({
     required this.name,
     required this.title,
     required this.image,
     required this.subTitle,
     this.subTitleIcon,
+    this.cardStyleMode,
     required this.favoriteIconButton,
   });
 
-  final Text name;
-  final Text title;
-  final Text subTitle;
+  final Widget name;
+  final Widget title;
+  final Widget subTitle;
   final Widget favoriteIconButton;
   final Widget? subTitleIcon;
   final DecorationImage image;
+  final CardStyleMode? cardStyleMode;
 }
