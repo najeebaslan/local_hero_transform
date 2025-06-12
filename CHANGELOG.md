@@ -1,3 +1,7 @@
+## [1.0.5]
+### 1. Make Loading Card Supported RTL and LTR Direction.
+
+
 ## [1.0.4]
 ### 1. Add Card GradientColor.
 ### 2. Add Loading Image Builder.
