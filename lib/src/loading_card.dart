@@ -33,10 +33,8 @@ class ShimmerBaseHeroCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isRtl = textDirection == TextDirection.rtl;
-
     return ConstrainedBox(
-      constraints: BoxConstraints(maxHeight: heightImage.w - paddingVertical),
+      constraints: BoxConstraints(maxHeight: heightImage),
       child: Container(
         decoration: BoxDecoration(
           border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
@@ -52,26 +50,26 @@ class ShimmerBaseHeroCard extends StatelessWidget {
         ),
         margin: EdgeInsets.symmetric(horizontal: paddingHorizontal, vertical: paddingVertical),
         child: Stack(
+          textDirection: textDirection,
           children: [
             // Shimmer Placeholder for Image
-            Positioned(
-              top: 8.w,
-              left: 8.w,
+            Padding(
+              padding: EdgeInsets.all(8.0.w),
               child: CustomShimmer(
                 isDark: cardStyleMode.isDarkMode,
                 animationShimmerColor: cardStyleMode.animationShimmerColor,
                 backgroundColor: cardStyleMode.itemColor,
-                height: widthImage - 16.w,
-                width: widthImage - 16.w,
+                height: widthImage - paddingImageAll * 2,
+                width: widthImage - paddingImageAll * 2,
                 borderRadius: BorderRadius.circular(16.r),
               ),
             ),
 
             // Shimmer Placeholder for Name
-            Positioned(
+            PositionedDirectional(
               bottom: bottomTitle,
-              right: isRtl ? rightTitle : 10.w,
-              left: !isRtl ? rightTitle : 10.w,
+              start: rightTitle,
+              end: 10.w,
               child: CustomShimmer(
                 isDark: cardStyleMode.isDarkMode,
                 animationShimmerColor: cardStyleMode.animationShimmerColor,
@@ -83,34 +81,38 @@ class ShimmerBaseHeroCard extends StatelessWidget {
             ),
 
             // Shimmer Placeholder for Title
-            Positioned(
-              width: cardWidth * 0.8,
+            PositionedDirectional(
               bottom: (bottomTitle / 1.7),
-              right: isRtl ? rightPrice : null,
-              left: !isRtl ? rightPrice : null,
-              child: CustomShimmer(
-                isDark: cardStyleMode.isDarkMode,
-                animationShimmerColor: cardStyleMode.animationShimmerColor,
-                backgroundColor: cardStyleMode.itemColor,
-                height: 10.h,
-                width: cardWidth * 0.5,
-                borderRadius: BorderRadius.circular(4.r),
+              start: rightPrice,
+              end: rightPrice,
+              child: SizedBox(
+                width: cardWidth * 0.8,
+                child: CustomShimmer(
+                  isDark: cardStyleMode.isDarkMode,
+                  animationShimmerColor: cardStyleMode.animationShimmerColor,
+                  backgroundColor: cardStyleMode.itemColor,
+                  height: 10.h,
+                  width: cardWidth * 0.5,
+                  borderRadius: BorderRadius.circular(4.r),
+                ),
               ),
             ),
 
             // Shimmer Placeholder for Subtitle
-            Positioned(
+            PositionedDirectional(
               bottom: bottomTitle / 6,
-              width: cardWidth * 0.8,
-              right: isRtl ? rightPrice : null,
-              left: !isRtl ? rightPrice : null,
-              child: CustomShimmer(
-                isDark: cardStyleMode.isDarkMode,
-                animationShimmerColor: cardStyleMode.animationShimmerColor,
-                backgroundColor: cardStyleMode.itemColor,
-                height: 8.h,
-                width: cardWidth * 0.4,
-                borderRadius: BorderRadius.circular(4.r),
+              start: rightPrice,
+              end: rightPrice,
+              child: SizedBox(
+                width: cardWidth * 0.8,
+                child: CustomShimmer(
+                  isDark: cardStyleMode.isDarkMode,
+                  animationShimmerColor: cardStyleMode.animationShimmerColor,
+                  backgroundColor: cardStyleMode.itemColor,
+                  height: 8.h,
+                  width: cardWidth * 0.4,
+                  borderRadius: BorderRadius.circular(4.r),
+                ),
               ),
             ),
           ],

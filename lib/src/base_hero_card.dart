@@ -62,7 +62,6 @@ class BaseHeroCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isRtl = textDirection == TextDirection.rtl;
-
     return itemsModel.cardStyleMode?.isLoading == true
         ? ShimmerBaseHeroCard(
             cardStyleMode: CardStyleMode(
@@ -76,7 +75,7 @@ class BaseHeroCard extends StatelessWidget {
                   CardStyleMode.getAnimationShimmerColor(
                       itemsModel.cardStyleMode?.isDarkMode ?? false),
             ),
-            heightImage: heightImage,
+            heightImage: heightImage.w,
             widthImage: widthImage,
             bottomTitle: bottomTitle,
             rightTitle: rightTitle,
