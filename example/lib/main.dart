@@ -53,12 +53,14 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
   late final TabController _tabController;
   late final ValueNotifier<FavoriteShape> _viewModeNotifier;
   late final ValueNotifier<TextDirection> _languageNotifier;
+  late final ValueNotifier<bool> _loadingNotifier;
 
   @override
   void initState() {
     super.initState();
     _viewModeNotifier = ValueNotifier(FavoriteShape.grid);
     _languageNotifier = ValueNotifier(TextDirection.ltr);
+    _loadingNotifier = ValueNotifier(false);
     _tabController = TabController(length: 2, vsync: this)..addListener(_handleTabChange);
   }
 
@@ -75,6 +77,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
       ..dispose();
     _viewModeNotifier.dispose();
     _languageNotifier.dispose();
+    _loadingNotifier.dispose();
     super.dispose();
   }
 
@@ -89,16 +92,22 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
   Widget _buildBody() {
     return ValueListenableBuilder<TextDirection>(
       valueListenable: _languageNotifier,
-      builder: (context, textDirection, _) => Directionality(
-        textDirection: textDirection,
-        child: LocalHeroViews(
-          tabController: _tabController,
-          onPressedCard: _handleCardPressed,
+      builder: (context, textDirection, _) {
+        return Directionality(
           textDirection: textDirection,
-          itemCount: locations.length,
-          itemsModel: _buildItemsModel,
-        ),
-      ),
+          child: ValueListenableBuilder<bool>(
+              valueListenable: _loadingNotifier,
+              builder: (context, _, child) {
+                return LocalHeroViews(
+                  tabController: _tabController,
+                  onPressedCard: _handleCardPressed,
+                  textDirection: textDirection,
+                  itemCount: locations.length,
+                  itemsModel: _buildItemsModel,
+                );
+              }),
+        );
+      },
     );
   }
 
@@ -120,7 +129,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
     return ItemsModel(
       cardStyleMode: CardStyleMode(
         isDarkMode: isDarkMode,
-        isLoading: false,
+        isLoading: _loadingNotifier.value,
 
         ///Todo: Uncomment the following lines if you want to use custom colors
         // cardColor: isDarkMode ? AppColors.darkCardColor : Colors.white,
@@ -209,6 +218,8 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
           _buildLanguageButton(TextDirection.ltr, '🇺🇸'),
           const SizedBox(width: 8),
           _buildThemeToggleButton(),
+          const SizedBox(width: 8),
+          _buildLoadingButton()
         ],
       ),
     );
@@ -239,6 +250,21 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
           onPressed: () => widget.themeNotifier.value =
               themeMode == ThemeMode.dark ? ThemeMode.light : ThemeMode.dark,
         );
+      },
+    );
+  }
+
+  Widget _buildLoadingButton() {
+    return ValueListenableBuilder<bool>(
+      valueListenable: _loadingNotifier,
+      builder: (context, isLoading, _) {
+        return IconButton(
+            style: _iconButtonStyle,
+            icon: Icon(
+              isLoading ? Icons.hourglass_bottom : Icons.hourglass_empty,
+              color: isLoading ? Colors.black38 : Colors.grey,
+            ),
+            onPressed: () => _loadingNotifier.value = !_loadingNotifier.value);
       },
     );
   }
@@ -317,7 +343,8 @@ class DetailsScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.indigoAccent,
-        title: Text(name),
+        iconTheme: IconThemeData(color: Colors.white),
+        title: Text(name, style: TextStyle(color: Colors.white)),
       ),
       body: Center(
         child: AspectRatio(

@@ -1,3 +1,8 @@
+## [1.0.6]
+### 1. Add button change loading view in example page.
+### 2. Refactor README.md file.
+
+
 ## [1.0.5]
 ### 1. Make Loading Card Supported RTL and LTR Direction.
 
